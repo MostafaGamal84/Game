@@ -170,7 +170,13 @@ class LevelSelectionScreen extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: Navigate to the chosen level screen.
+                              if (index == 0) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const LevelOneScreen(),
+                                  ),
+                                );
+                              }
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -200,6 +206,126 @@ class LevelSelectionScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class LevelOneScreen extends StatelessWidget {
+  const LevelOneScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFEAF4FB),
+      body: SafeArea(
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'لعبة خمن الصورة',
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0D3A34),
+                      height: 1.2,
+                      fontFamily: GoogleFonts.tajawal().fontFamily,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _LevelChoiceCard(
+                          title: 'منظر حضاري',
+                          backgroundImage: 'assets/images/true.png',
+                        ),
+                      ),
+                      const SizedBox(width: 18),
+                      Expanded(
+                        child: _LevelChoiceCard(
+                          title: 'تشوه بصري',
+                          backgroundImage: 'assets/images/false.png',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LevelChoiceCard extends StatelessWidget {
+  const _LevelChoiceCard({
+    required this.title,
+    required this.backgroundImage,
+  });
+
+  final String title;
+  final String backgroundImage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              backgroundImage,
+              fit: BoxFit.cover,
+            ),
+            Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.05),
+                    Colors.black.withOpacity(0.35),
+                  ],
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
