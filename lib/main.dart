@@ -30,9 +30,13 @@ class StartScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            'assets/images/main.png',
-            fit: BoxFit.cover,
+          Container(color: Colors.white),
+          Align(
+            alignment: Alignment.center,
+            child: Image.asset(
+              'assets/images/main.png',
+              fit: BoxFit.contain,
+            ),
           ),
           SafeArea(
             child: Align(
