@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,8 +14,10 @@ class MyApp extends StatelessWidget {
       title: 'Game',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0F8C4B)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF00695C)),
         useMaterial3: true,
+        textTheme: GoogleFonts.tajawalTextTheme(),
+        fontFamily: GoogleFonts.tajawal().fontFamily,
       ),
       home: const StartScreen(),
     );
@@ -49,27 +52,40 @@ class StartScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0F8C4B),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(
+                        Icons.play_arrow_rounded,
+                        size: 32,
                       ),
-                      textStyle: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00695C),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 16),
+                        elevation: 6,
+                        shadowColor: const Color(0xFF00695C).withOpacity(0.45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(28),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const LevelSelectionScreen(),
+                          ),
+                        );
+                      },
+                      label: const Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Text('ابدأ اللعب'),
                       ),
                     ),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const LevelSelectionScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text('ابدأ اللعب'),
                   ),
                 ),
               ),
@@ -93,95 +109,91 @@ class LevelSelectionScreen extends StatelessWidget {
             'assets/images/levelBackground.png',
             fit: BoxFit.cover,
           ),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.black.withOpacity(0.45),
-                  Colors.black.withOpacity(0.25),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-          ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
               child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      'اختيار المستوى',
+                      'حدد المستوى',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 34,
+                        fontSize: 40,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      'حدد المستوى الذي ترغب في اللعب به لبدء لعبة رصد تشوهات الشاشة.',
+                      'اختر المغامرة المناسبة لك وابدأ اللعب!',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 18,
-                        height: 1.5,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 36),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (final level in [
-                            '1',
-                            '2',
-                            '3',
-                          ])
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF0F8C4B),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                  textStyle: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  // TODO: Navigate to the chosen level screen.
-                                },
-                                child: Text(level),
+                    const SizedBox(height: 40),
+                    for (var index = 0; index < 3; index++)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: TweenAnimationBuilder<double>(
+                          duration: Duration(milliseconds: 700 + index * 120),
+                          curve: Curves.easeOutBack,
+                          tween: Tween<double>(begin: 0, end: 1),
+                          builder: (context, value, child) {
+                            return Transform.translate(
+                              offset: Offset(0, (1 - value) * 40),
+                              child: Transform.scale(
+                                scale: value,
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF00695C),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(26),
+                              ),
+                              elevation: 6,
+                              shadowColor: const Color(0xFF00695C).withOpacity(0.35),
+                              textStyle: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
-                          const Spacer(),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton.icon(
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                textStyle: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
+                            onPressed: () {
+                              // TODO: Navigate to the chosen level screen.
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  [
+                                    Icons.looks_one_rounded,
+                                    Icons.looks_two_rounded,
+                                    Icons.looks_3_rounded,
+                                  ][index],
+                                  size: 32,
                                 ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              icon: const Icon(Icons.arrow_forward),
-                              label: const Text('رجوع'),
+                                const SizedBox(width: 12),
+                                Text([
+                                  'المستوى 1',
+                                  'المستوى 2',
+                                  'المستوى 3',
+                                ][index]),
+                              ],
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
