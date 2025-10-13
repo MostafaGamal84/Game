@@ -61,6 +61,8 @@ flutter:
   assets:
     - assets/images/main.png
     - assets/images/levelBackground.png
+    - assets/images/false.png
+    - assets/images/true.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
