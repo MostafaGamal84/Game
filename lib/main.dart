@@ -86,7 +86,7 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'assets/images/levelBackground.png',
+            'assets/images/main.png',
             fit: BoxFit.cover,
           ),
           Container(
@@ -254,7 +254,7 @@ class LevelSelectionScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                  ],
+                )],
                 ),
               ),
             ),
