@@ -284,19 +284,18 @@ class LevelOneScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'لعبة خمن الصورة',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          height: 1.2,
-                          fontFamily: GoogleFonts.tajawal().fontFamily,
-                        ),
+                    Text(
+                      'لعبة خمن الصورة',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 44,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        height: 1.2,
+                        fontFamily: GoogleFonts.tajawal().fontFamily,
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -313,6 +312,43 @@ class LevelOneScreen extends StatelessWidget {
                           backgroundImage: 'assets/images/false.png',
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      width: 194,
+                      height: 102,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(
+                          Icons.play_arrow_rounded,
+                          size: 36,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00695C),
+                          foregroundColor: Colors.white,
+                          elevation: 6,
+                          shadowColor: const Color(0xFF00695C).withOpacity(0.45),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          textStyle: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.5,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const LevelSelectionScreen(),
+                            ),
+                          );
+                        },
+                        label: const Padding(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: Text('ابدا اللعب'),
+                        ),
+                      ),
                     ),
                   ],
                 ),
