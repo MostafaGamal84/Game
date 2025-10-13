@@ -284,30 +284,29 @@ class LevelOneScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'لعبة خمن الصورة',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          height: 1.2,
-                          fontFamily: GoogleFonts.tajawal().fontFamily,
-                        ),
+                    Text(
+                      'لعبة خمن الصورة',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 44,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        height: 1.2,
+                        fontFamily: GoogleFonts.tajawal().fontFamily,
                       ),
                     ),
                     const SizedBox(height: 32),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _LevelChoiceCard(
                           title: 'منظر حضاري',
                           backgroundImage: 'assets/images/true.png',
                         ),
-                        const SizedBox(width: 18),
+                        SizedBox(width: 18),
                         _LevelChoiceCard(
                           title: 'تشوه بصري',
                           backgroundImage: 'assets/images/false.png',
