@@ -85,45 +85,41 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              color: Color(0xFFEAF4FB),
-            ),
+          Image.asset(
+            'assets/images/levelBackground.png',
+            fit: BoxFit.cover,
           ),
-          Positioned.fill(
-            child: FittedBox(
-              fit: BoxFit.fitWidth,
-              alignment: Alignment.topCenter,
-              child: Image.asset('assets/images/main.png'),
-            ),
+          Container(
+            color: Colors.black.withOpacity(0.25),
           ),
           SafeArea(
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Directionality(
-                    textDirection: TextDirection.rtl,
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: SizedBox(
+                    width: 194,
+                    height: 102,
                     child: ElevatedButton.icon(
                       icon: const Icon(
                         Icons.play_arrow_rounded,
-                        size: 32,
+                        size: 36,
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF00695C),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 16),
                         elevation: 6,
                         shadowColor: const Color(0xFF00695C).withOpacity(0.45),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(28),
                         ),
                         textStyle: const TextStyle(
-                          fontSize: 26,
+                          fontSize: 24,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.5,
+                          color: Colors.white,
                         ),
                       ),
                       onPressed: () {
