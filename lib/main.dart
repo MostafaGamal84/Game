@@ -130,7 +130,7 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
                         );
                       },
                       label: const Padding(
-                        padding: EdgeInsets.only(right: 6.0),
+                        padding: EdgeInsets.only(right: 8.0),
                         child: Text('ابدا اللعب'),
                       ),
                     ),
@@ -271,52 +271,55 @@ class LevelOneScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEAF4FB),
-      body: SafeArea(
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'لعبة خمن الصورة',
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0D3A34),
-                      height: 1.2,
-                      fontFamily: GoogleFonts.tajawal().fontFamily,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/images/levelBackground.png',
+            fit: BoxFit.cover,
+          ),
+          SafeArea(
+            child: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'لعبة خمن الصورة',
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          height: 1.2,
+                          fontFamily: GoogleFonts.tajawal().fontFamily,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _LevelChoiceCard(
+                    const SizedBox(height: 32),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _LevelChoiceCard(
                           title: 'منظر حضاري',
                           backgroundImage: 'assets/images/true.png',
                         ),
-                      ),
-                      const SizedBox(width: 18),
-                      Expanded(
-                        child: _LevelChoiceCard(
+                        const SizedBox(width: 18),
+                        _LevelChoiceCard(
                           title: 'تشوه بصري',
                           backgroundImage: 'assets/images/false.png',
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -333,52 +336,47 @@ class _LevelChoiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              backgroundImage,
-              fit: BoxFit.cover,
+    return SizedBox(
+      width: 194,
+      height: 102,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
             ),
-            Container(
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.05),
-                    Colors.black.withOpacity(0.35),
-                  ],
-                ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                backgroundImage,
+                fit: BoxFit.cover,
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
+              Container(
+                alignment: Alignment.center,
+                color: Colors.black.withOpacity(0.35),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
