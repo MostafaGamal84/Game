@@ -30,12 +30,16 @@ class StartScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Container(color: Colors.white),
-          Align(
-            alignment: Alignment.center,
-            child: Image.asset(
-              'assets/images/main.png',
-              fit: BoxFit.contain,
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              color: Color(0xFFEAF4FB),
+            ),
+          ),
+          Positioned.fill(
+            child: FittedBox(
+              fit: BoxFit.fitWidth,
+              alignment: Alignment.topCenter,
+              child: Image.asset('assets/images/main.png'),
             ),
           ),
           SafeArea(
