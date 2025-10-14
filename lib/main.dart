@@ -287,6 +287,7 @@ class LevelOneScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    const SizedBox(height: 48),
                     Text(
                       'لعبة خمن الصورة',
                       textAlign: TextAlign.center,
