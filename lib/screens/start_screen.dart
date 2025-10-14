@@ -59,6 +59,8 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -93,7 +95,7 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(28),
                         ),
-                        textStyle: const TextStyle(
+                        textStyle: textTheme.titleLarge?.copyWith(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.5,

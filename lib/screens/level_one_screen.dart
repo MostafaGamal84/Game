@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import 'package:game/screens/level_one_photo_screen.dart';
 
 class LevelOneScreen extends StatelessWidget {
@@ -8,6 +6,8 @@ class LevelOneScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -29,12 +29,11 @@ class LevelOneScreen extends StatelessWidget {
                     Text(
                       'لعبة خمن الصورة',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: textTheme.displayMedium?.copyWith(
                         fontSize: 44,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
                         height: 1.2,
-                        fontFamily: GoogleFonts.tajawal().fontFamily,
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -107,7 +106,7 @@ class LevelOneScreen extends StatelessWidget {
                           ),
                           elevation: 6,
                           shadowColor: const Color(0xFF00695C).withOpacity(0.35),
-                          textStyle: const TextStyle(
+                          textStyle: textTheme.titleMedium?.copyWith(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -180,11 +179,11 @@ class _LevelChoiceCard extends StatelessWidget {
                   child: Text(
                     title,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                   ),
                 ),
               ),

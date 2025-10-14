@@ -33,6 +33,8 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -63,10 +65,10 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
                       ],
                     ),
                     const SizedBox(height: 36),
-                    const Text(
+                    Text(
                       'اختر نوع الصورة',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: textTheme.displaySmall?.copyWith(
                         fontSize: 34,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
@@ -103,7 +105,8 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
                         Expanded(
                           child: _ChoiceButton(
                             label: 'تشوه بصري',
-                            backgroundColor: const Color(0xFFB86A45),
+                            backgroundColor: const Color(0xFFA66B55),
+                            textColor: const Color(0xFFF7E7DC),
                             onPressed: () {},
                           ),
                         ),
@@ -111,7 +114,8 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
                         Expanded(
                           child: _ChoiceButton(
                             label: 'منظر حضاري',
-                            backgroundColor: const Color(0xFF00695C),
+                            backgroundColor: const Color(0xFF1E6F5C),
+                            textColor: const Color(0xFFEAF5EE),
                             onPressed: () {},
                           ),
                         ),
@@ -163,32 +167,51 @@ class _ChoiceButton extends StatelessWidget {
     required this.label,
     required this.backgroundColor,
     required this.onPressed,
+    this.textColor = Colors.white,
   });
 
   final String label;
   final Color backgroundColor;
+  final Color textColor;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return SizedBox(
       height: 64,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          elevation: 6,
-          shadowColor: backgroundColor.withOpacity(0.45),
-          textStyle: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: backgroundColor.withOpacity(0.38),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: onPressed,
+            child: Center(
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: textTheme.titleMedium?.copyWith(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: textColor,
+                  height: 1.2,
+                ),
+              ),
+            ),
           ),
         ),
-        onPressed: onPressed,
-        child: Text(label),
       ),
     );
   }
