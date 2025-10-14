@@ -6,6 +6,8 @@ class LevelTwoIntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final baseTitleStyle =
+        textTheme.displayLarge ?? textTheme.headlineLarge ?? const TextStyle(fontSize: 48);
 
     return Scaffold(
       body: Stack(
@@ -32,11 +34,17 @@ class LevelTwoIntroScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Text(
-                      'لعبة ابحث عن التشوة',
-                      style: textTheme.displaySmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
+                    Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'لعبة\nابحث عن التشوة',
+                        textAlign: TextAlign.center,
+                        style: baseTitleStyle.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 48,
+                          height: 1.2,
+                        ),
                       ),
                     ),
                     const Spacer(),
