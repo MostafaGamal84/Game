@@ -284,35 +284,57 @@ class LevelOneScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'لعبة خمن الصورة',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          height: 1.2,
-                          fontFamily: GoogleFonts.tajawal().fontFamily,
-                        ),
+                    Text(
+                      'لعبة خمن الصورة',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 44,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        height: 1.2,
+                        fontFamily: GoogleFonts.tajawal().fontFamily,
                       ),
                     ),
                     const SizedBox(height: 32),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: const [
                         _LevelChoiceCard(
                           title: 'منظر حضاري',
                           backgroundImage: 'assets/images/true.png',
                         ),
-                        const SizedBox(width: 18),
+                        SizedBox(width: 18),
                         _LevelChoiceCard(
                           title: 'تشوه بصري',
                           backgroundImage: 'assets/images/false.png',
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      width: 194,
+                      height: 62,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00695C),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          elevation: 6,
+                          shadowColor: const Color(0xFF00695C).withOpacity(0.35),
+                          textStyle: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: const Text('ابدا اللعب'),
+                      ),
                     ),
                   ],
                 ),
