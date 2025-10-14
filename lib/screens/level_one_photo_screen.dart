@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'level_completion_screen.dart';
+
 class LevelOnePhotoScreen extends StatefulWidget {
   const LevelOnePhotoScreen({super.key});
 
@@ -8,26 +10,103 @@ class LevelOnePhotoScreen extends StatefulWidget {
 }
 
 class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
-  static const List<String> _levelImages = [
-    'assets/images/LevelOne/bad1.jpg',
-    'assets/images/LevelOne/bad2.jpg',
-    'assets/images/LevelOne/bad3.jpg',
-    'assets/images/LevelOne/bad4.jpg',
-    'assets/images/LevelOne/bad5.jpg',
-    'assets/images/LevelOne/good1.jpg',
-    'assets/images/LevelOne/good2.jpg',
-    'assets/images/LevelOne/good3.jpg',
-    'assets/images/LevelOne/good4.jpg',
-    'assets/images/LevelOne/good5.jpg',
+  static const List<PhotoQuestion> _questions = [
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/bad1.jpg',
+      category: PhotoCategory.visualPollution,
+      description: 'تكدس النفايات في الشوارع يسبب روائح كريهة ويشوه منظر المدينة الجميل.',
+    ),
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/bad2.jpg',
+      category: PhotoCategory.visualPollution,
+      description: 'الكتابة العشوائية على الجدران تقلل من جمالية المكان وتؤثر على سلوك الزوار.',
+    ),
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/bad3.jpg',
+      category: PhotoCategory.visualPollution,
+      description: 'الأسلاك المعلقة بشكل غير منظم قد تكون خطيرة وتظهر الحي بمظهر غير مرتب.',
+    ),
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/bad4.jpg',
+      category: PhotoCategory.visualPollution,
+      description: 'إلقاء المخلفات بجانب الحاويات يعيق المارة ويؤثر على الصحة العامة.',
+    ),
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/bad5.jpg',
+      category: PhotoCategory.visualPollution,
+      description: 'إهمال الحدائق العامة وتركها دون رعاية يقلل من نصيبنا من المساحات الخضراء.',
+    ),
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/good1.jpg',
+      category: PhotoCategory.civilizedView,
+      description: 'تنسيق النباتات والزهور بألوان مختلفة يمنح المكان حياةً وراحةً للنظر.',
+    ),
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/good2.jpg',
+      category: PhotoCategory.civilizedView,
+      description: 'تنظيم المقاعد في الحدائق يساعد الجميع على الاستمتاع بالهواء الطلق براحة.',
+    ),
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/good3.jpg',
+      category: PhotoCategory.civilizedView,
+      description: 'وجود مسارات للمشاة والدراجات يجعل التنقل آمناً ويشجع على ممارسة الرياضة.',
+    ),
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/good4.jpg',
+      category: PhotoCategory.civilizedView,
+      description: 'المباني النظيفة والمصممة بعناية تعكس اهتمام السكان بمدينتهم.',
+    ),
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/good5.jpg',
+      category: PhotoCategory.civilizedView,
+      description: 'توفير مساحات للعب الأطفال يجعل الحي أكثر حيوية وسعادة للعائلات.',
+    ),
   ];
 
   int _currentIndex = 0;
+  bool? _isAnswerCorrect;
+  bool _showFeedback = false;
 
-  String get _currentImage => _levelImages[_currentIndex];
+  PhotoQuestion get _currentQuestion => _questions[_currentIndex];
+
+  String get _currentImage => _currentQuestion.assetPath;
+
+  bool get _isLastQuestion => _currentIndex == _questions.length - 1;
 
   void _showNextImage() {
     setState(() {
-      _currentIndex = (_currentIndex + 1) % _levelImages.length;
+      _currentIndex = (_currentIndex + 1) % _questions.length;
+      _isAnswerCorrect = null;
+      _showFeedback = false;
+    });
+  }
+
+  void _onAnswerSelected(PhotoCategory category) {
+    if (_showFeedback) {
+      return;
+    }
+
+    final isCorrect = category == _currentQuestion.category;
+    setState(() {
+      _isAnswerCorrect = isCorrect;
+      _showFeedback = true;
+    });
+  }
+
+  void _handleNextQuestion() {
+    if (_isLastQuestion) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const LevelCompletionScreen(),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _currentIndex += 1;
+      _isAnswerCorrect = null;
+      _showFeedback = false;
     });
   }
 
@@ -107,7 +186,11 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
                             label: 'تشوه بصري',
                             backgroundColor: const Color(0xFFA66B55),
                             textColor: const Color(0xFFF7E7DC),
-                            onPressed: () {},
+                            onPressed: _showFeedback
+                                ? null
+                                : () => _onAnswerSelected(
+                                      PhotoCategory.visualPollution,
+                                    ),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -116,7 +199,11 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
                             label: 'منظر حضاري',
                             backgroundColor: const Color(0xFF1E6F5C),
                             textColor: const Color(0xFFEAF5EE),
-                            onPressed: () {},
+                            onPressed: _showFeedback
+                                ? null
+                                : () => _onAnswerSelected(
+                                      PhotoCategory.civilizedView,
+                                    ),
                           ),
                         ),
                       ],
@@ -126,7 +213,158 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
               ),
             ),
           ),
+          if (_showFeedback && _isAnswerCorrect != null)
+            _AnswerFeedbackOverlay(
+              question: _currentQuestion,
+              isCorrect: _isAnswerCorrect!,
+              isLastQuestion: _isLastQuestion,
+              onNext: _handleNextQuestion,
+              onTryAgain: () {
+                setState(() {
+                  _showFeedback = false;
+                  _isAnswerCorrect = null;
+                });
+              },
+            ),
         ],
+      ),
+    );
+  }
+}
+
+class PhotoQuestion {
+  const PhotoQuestion({
+    required this.assetPath,
+    required this.category,
+    required this.description,
+  });
+
+  final String assetPath;
+  final PhotoCategory category;
+  final String description;
+}
+
+enum PhotoCategory {
+  visualPollution,
+  civilizedView,
+}
+
+class _AnswerFeedbackOverlay extends StatelessWidget {
+  const _AnswerFeedbackOverlay({
+    required this.question,
+    required this.isCorrect,
+    required this.isLastQuestion,
+    required this.onNext,
+    required this.onTryAgain,
+  });
+
+  final PhotoQuestion question;
+  final bool isCorrect;
+  final bool isLastQuestion;
+  final VoidCallback onNext;
+  final VoidCallback onTryAgain;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final Color accentColor = isCorrect ? const Color(0xFF1E6F5C) : const Color(0xFFA8443D);
+    final IconData icon = isCorrect ? Icons.check_circle_rounded : Icons.close_rounded;
+    final String title = isCorrect ? 'إجابة صحيحة' : 'إجابة خاطئة';
+    final String buttonLabel = isCorrect
+        ? (isLastQuestion ? 'إنهاء' : 'التالي')
+        : 'حاول مجدداً';
+
+    return Positioned.fill(
+      child: Container(
+        color: Colors.black.withOpacity(0.55),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: accentColor.withOpacity(0.3),
+                    blurRadius: 28,
+                    offset: const Offset(0, 18),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: accentColor.withOpacity(0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(12),
+                    child: Icon(
+                      icon,
+                      color: accentColor,
+                      size: 48,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    title,
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: accentColor,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(22),
+                    child: Image.asset(
+                      question.assetPath,
+                      height: 160,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    isCorrect
+                        ? question.description
+                        : 'فكر مرة أخرى ولاحظ تفاصيل الصورة لتحديد الاختيار الصحيح.',
+                    textAlign: TextAlign.center,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontSize: 20,
+                      height: 1.5,
+                      color: const Color(0xFF4A4A4A),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accentColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        textStyle: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 20,
+                        ),
+                      ),
+                      onPressed: isCorrect ? onNext : onTryAgain,
+                      child: Text(buttonLabel),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -173,21 +411,22 @@ class _ChoiceButton extends StatelessWidget {
   final String label;
   final Color backgroundColor;
   final Color textColor;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final bool isEnabled = onPressed != null;
 
     return SizedBox(
       height: 64,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: isEnabled ? backgroundColor : backgroundColor.withOpacity(0.55),
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
-              color: backgroundColor.withOpacity(0.38),
+              color: backgroundColor.withOpacity(isEnabled ? 0.38 : 0.15),
               blurRadius: 18,
               offset: const Offset(0, 10),
             ),
@@ -205,7 +444,7 @@ class _ChoiceButton extends StatelessWidget {
                 style: textTheme.titleMedium?.copyWith(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
-                  color: textColor,
+                  color: isEnabled ? textColor : textColor.withOpacity(0.7),
                   height: 1.2,
                 ),
               ),
