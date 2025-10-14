@@ -96,7 +96,7 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
                 child: Directionality(
                   textDirection: TextDirection.rtl,
                   child: SizedBox(
