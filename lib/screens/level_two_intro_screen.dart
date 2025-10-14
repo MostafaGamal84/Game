@@ -31,7 +31,7 @@ class LevelTwoIntroScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 24),
                     Text(
                       'لعبة ابحث عن التشوة',
                       style: textTheme.displaySmall?.copyWith(
@@ -39,7 +39,7 @@ class LevelTwoIntroScreen extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const Spacer(),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
