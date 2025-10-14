@@ -299,106 +299,17 @@ class LevelOneScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final cardWidth = 194.0;
-                        const gap = 18.0;
-                        final available = constraints.maxWidth;
-                        final fitsSideBySide = available >= cardWidth * 2 + gap;
-
-                        if (fitsSideBySide) {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              _LevelChoiceCard(
-                                title: 'منظر حضاري',
-                                backgroundImage: 'assets/images/true.png',
-                              ),
-                              SizedBox(width: gap),
-                              _LevelChoiceCard(
-                                title: 'تشوه بصري',
-                                backgroundImage: 'assets/images/false.png',
-                              ),
-                            ],
-                          );
-                        }
-
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            _LevelChoiceCard(
-                              title: 'منظر حضاري',
-                              backgroundImage: 'assets/images/true.png',
-                            ),
-                            SizedBox(height: gap),
-                            _LevelChoiceCard(
-                              title: 'تشوه بصري',
-                              backgroundImage: 'assets/images/false.png',
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 28),
-                    SizedBox(
-                      width: 194,
-                      height: 102,
-                      child: ElevatedButton.icon(
-                        icon: const Icon(
-                          Icons.play_arrow_rounded,
-                          size: 36,
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _LevelChoiceCard(
+                          title: 'منظر حضاري',
+                          backgroundImage: 'assets/images/true.png',
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00695C),
-                          foregroundColor: Colors.white,
-                          elevation: 6,
-                          shadowColor: const Color(0xFF00695C).withOpacity(0.45),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                          textStyle: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.5,
-                            color: Colors.white,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const LevelSelectionScreen(),
-                            ),
-                          );
-                        },
-                        label: const Padding(
-                          padding: EdgeInsets.only(right: 8.0),
-                          child: Text('ابدا اللعب'),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 28),
-                    SizedBox(
-                      width: 194,
-                      height: 102,
-                      child: ElevatedButton.icon(
-                        icon: const Icon(
-                          Icons.play_arrow_rounded,
-                          size: 36,
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00695C),
-                          foregroundColor: Colors.white,
-                          elevation: 6,
-                          shadowColor: const Color(0xFF00695C).withOpacity(0.45),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                          textStyle: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.5,
-                            color: Colors.white,
-                          ),
+                        SizedBox(width: 18),
+                        _LevelChoiceCard(
+                          title: 'تشوه بصري',
+                          backgroundImage: 'assets/images/false.png',
                         ),
                         onPressed: () {
                           Navigator.of(context).push(
