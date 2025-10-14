@@ -133,14 +133,14 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _IconCircleButton(
-                          icon: Icons.arrow_back_ios_new_rounded,
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                        _IconCircleButton(
-                          icon: Icons.refresh_rounded,
-                          onPressed: _showNextImage,
-                        ),
+                        // _IconCircleButton(
+                        //   icon: Icons.arrow_back_ios_new_rounded,
+                        //   onPressed: () => Navigator.of(context).pop(),
+                        // ),
+                        // _IconCircleButton(
+                        //   icon: Icons.refresh_rounded,
+                        //   onPressed: _showNextImage,
+                        // ),
                       ],
                     ),
                     const SizedBox(height: 36),
