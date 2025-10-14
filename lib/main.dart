@@ -301,7 +301,7 @@ class LevelOneScreen extends StatelessWidget {
                     const SizedBox(height: 32),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: const [
                         _LevelChoiceCard(
                           title: 'منظر حضاري',
                           backgroundImage: 'assets/images/true.png',
@@ -322,6 +322,29 @@ class LevelOneScreen extends StatelessWidget {
                           padding: EdgeInsets.only(right: 8.0),
                           child: Text('ابدا اللعب'),
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      width: 194,
+                      height: 62,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00695C),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          elevation: 6,
+                          shadowColor: const Color(0xFF00695C).withOpacity(0.35),
+                          textStyle: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: const Text('ابدا اللعب'),
                       ),
                     ),
                   ],
