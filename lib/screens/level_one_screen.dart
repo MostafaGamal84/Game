@@ -1,29 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class LevelOneScreen extends StatefulWidget {
+class LevelOneScreen extends StatelessWidget {
   const LevelOneScreen({super.key});
-
-  @override
-  State<LevelOneScreen> createState() => _LevelOneScreenState();
-}
-
-class _LevelOneScreenState extends State<LevelOneScreen> {
-  static const List<String> _levelImages = [
-    'assets/images/LevelOne/bad1.jpg',
-    'assets/images/LevelOne/bad2.jpg',
-    'assets/images/LevelOne/bad3.jpg',
-    'assets/images/LevelOne/bad4.jpg',
-    'assets/images/LevelOne/bad5.jpg',
-    'assets/images/LevelOne/good1.jpg',
-    'assets/images/LevelOne/good2.jpg',
-    'assets/images/LevelOne/good3.jpg',
-    'assets/images/LevelOne/good4.jpg',
-    'assets/images/LevelOne/good5.jpg',
-  ];
-
-  int _currentIndex = 0;
-
-  String get _currentImage => _levelImages[_currentIndex];
 
   @override
   Widget build(BuildContext context) {
@@ -39,77 +18,102 @@ class _LevelOneScreenState extends State<LevelOneScreen> {
             child: Directionality(
               textDirection: TextDirection.rtl,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _IconCircleButton(
-                          icon: Icons.arrow_back_ios_new_rounded,
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                        _IconCircleButton(
-                          icon: Icons.account_circle_rounded,
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 36),
-                    const Text(
-                      'اختر نوع الصورة',
+                    const SizedBox(height: 48),
+                    Text(
+                      'لعبة خمن الصورة',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 34,
+                        fontSize: 44,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
+                        height: 1.2,
+                        fontFamily: GoogleFonts.tajawal().fontFamily,
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    Expanded(
-                      child: Center(
-                        child: Container(
-                          constraints: const BoxConstraints(maxWidth: 320, maxHeight: 240),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(28),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.25),
-                                blurRadius: 20,
-                                offset: const Offset(0, 14),
+                    const SizedBox(height: 32),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        const spacing = 18.0;
+                        const minCardWidth = 140.0;
+                        const maxCardWidth = 194.0;
+                        final maxWidth = constraints.maxWidth;
+
+                        double cardWidth;
+                        bool useRowLayout = true;
+
+                        if (maxWidth >= (maxCardWidth * 2) + spacing) {
+                          cardWidth = maxCardWidth;
+                        } else if (maxWidth >= (minCardWidth * 2) + spacing) {
+                          cardWidth = (maxWidth - spacing) / 2;
+                        } else {
+                          cardWidth = maxWidth;
+                          useRowLayout = false;
+                        }
+
+                        if (useRowLayout) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _LevelChoiceCard(
+                                title: 'منظر حضاري',
+                                backgroundImage: 'assets/images/true.png',
+                                width: cardWidth,
+                              ),
+                              const SizedBox(width: spacing),
+                              _LevelChoiceCard(
+                                title: 'تشوه بصري',
+                                backgroundImage: 'assets/images/false.png',
+                                width: cardWidth,
                               ),
                             ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(28),
-                            child: Image.asset(
-                              _currentImage,
-                              fit: BoxFit.cover,
+                          );
+                        }
+
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _LevelChoiceCard(
+                              title: 'منظر حضاري',
+                              backgroundImage: 'assets/images/true.png',
+                              width: cardWidth,
                             ),
-                          ),
-                        ),
-                      ),
+                            const SizedBox(height: spacing),
+                            _LevelChoiceCard(
+                              title: 'تشوه بصري',
+                              backgroundImage: 'assets/images/false.png',
+                              width: cardWidth,
+                            ),
+                          ],
+                        );
+                      },
                     ),
-                    const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _ChoiceButton(
-                            label: 'تشوه بصري',
-                            backgroundColor: const Color(0xFFB86A45),
-                            onPressed: () {},
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      width: 194,
+                      height: 62,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00695C),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          elevation: 6,
+                          shadowColor: const Color(0xFF00695C).withOpacity(0.35),
+                          textStyle: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _ChoiceButton(
-                            label: 'منظر حضاري',
-                            backgroundColor: const Color(0xFF00695C),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ],
+                        onPressed: () {},
+                        child: const Text('ابدا اللعب'),
+                      ),
                     ),
                   ],
                 ),
@@ -122,67 +126,63 @@ class _LevelOneScreenState extends State<LevelOneScreen> {
   }
 }
 
-class _IconCircleButton extends StatelessWidget {
-  const _IconCircleButton({
-    required this.icon,
-    required this.onPressed,
+class _LevelChoiceCard extends StatelessWidget {
+  const _LevelChoiceCard({
+    required this.title,
+    required this.backgroundImage,
+    this.width = 194,
+    this.height = 102,
   });
 
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withOpacity(0.18),
-      shape: const CircleBorder(),
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ChoiceButton extends StatelessWidget {
-  const _ChoiceButton({
-    required this.label,
-    required this.backgroundColor,
-    required this.onPressed,
-  });
-
-  final String label;
-  final Color backgroundColor;
-  final VoidCallback onPressed;
+  final String title;
+  final String backgroundImage;
+  final double width;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 64,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          elevation: 6,
-          shadowColor: backgroundColor.withOpacity(0.45),
-          textStyle: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
+      width: width,
+      height: height,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                backgroundImage,
+                fit: BoxFit.cover,
+              ),
+              Container(
+                alignment: Alignment.center,
+                color: Colors.black.withOpacity(0.35),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        onPressed: onPressed,
-        child: Text(label),
       ),
     );
   }
