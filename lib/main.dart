@@ -299,19 +299,61 @@ class LevelOneScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _LevelChoiceCard(
-                          title: 'منظر حضاري',
-                          backgroundImage: 'assets/images/true.png',
-                        ),
-                        SizedBox(width: 18),
-                        _LevelChoiceCard(
-                          title: 'تشوه بصري',
-                          backgroundImage: 'assets/images/false.png',
-                        ),
-                      ],
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        const spacing = 18.0;
+                        const minCardWidth = 140.0;
+                        const maxCardWidth = 194.0;
+                        final maxWidth = constraints.maxWidth;
+
+                        double cardWidth;
+                        bool useRowLayout = true;
+
+                        if (maxWidth >= (maxCardWidth * 2) + spacing) {
+                          cardWidth = maxCardWidth;
+                        } else if (maxWidth >= (minCardWidth * 2) + spacing) {
+                          cardWidth = (maxWidth - spacing) / 2;
+                        } else {
+                          cardWidth = maxWidth;
+                          useRowLayout = false;
+                        }
+
+                        if (useRowLayout) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _LevelChoiceCard(
+                                title: 'منظر حضاري',
+                                backgroundImage: 'assets/images/true.png',
+                                width: cardWidth,
+                              ),
+                              const SizedBox(width: spacing),
+                              _LevelChoiceCard(
+                                title: 'تشوه بصري',
+                                backgroundImage: 'assets/images/false.png',
+                                width: cardWidth,
+                              ),
+                            ],
+                          );
+                        }
+
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _LevelChoiceCard(
+                              title: 'منظر حضاري',
+                              backgroundImage: 'assets/images/true.png',
+                              width: cardWidth,
+                            ),
+                            const SizedBox(height: spacing),
+                            _LevelChoiceCard(
+                              title: 'تشوه بصري',
+                              backgroundImage: 'assets/images/false.png',
+                              width: cardWidth,
+                            ),
+                          ],
+                        );
+                      },
                     ),
                     const SizedBox(height: 28),
                     SizedBox(
@@ -351,16 +393,20 @@ class _LevelChoiceCard extends StatelessWidget {
   const _LevelChoiceCard({
     required this.title,
     required this.backgroundImage,
+    this.width = 194,
+    this.height = 102,
   });
 
   final String title;
   final String backgroundImage;
+  final double width;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 194,
-      height: 102,
+      width: width,
+      height: height,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
