@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:game/screens/level_one_photo_screen.dart';
+
 class LevelOneScreen extends StatelessWidget {
   const LevelOneScreen({super.key});
 
@@ -111,7 +113,13 @@ class LevelOneScreen extends StatelessWidget {
                             color: Colors.white,
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const LevelOnePhotoScreen(),
+                            ),
+                          );
+                        },
                         child: const Text('ابدا اللعب'),
                       ),
                     ),
