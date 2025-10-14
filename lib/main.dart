@@ -301,7 +301,7 @@ class LevelOneScreen extends StatelessWidget {
                     const SizedBox(height: 32),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         _LevelChoiceCard(
                           title: 'منظر حضاري',
                           backgroundImage: 'assets/images/true.png',
@@ -311,18 +311,7 @@ class LevelOneScreen extends StatelessWidget {
                           title: 'تشوه بصري',
                           backgroundImage: 'assets/images/false.png',
                         ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const LevelSelectionScreen(),
-                            ),
-                          );
-                        },
-                        label: const Padding(
-                          padding: EdgeInsets.only(right: 8.0),
-                          child: Text('ابدا اللعب'),
-                        ),
-                      ),
+                      ],
                     ),
                     const SizedBox(height: 28),
                     SizedBox(
