@@ -7,6 +7,8 @@ class LevelSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -24,20 +26,20 @@ class LevelSelectionScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'حدد المستوى',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: textTheme.displaySmall?.copyWith(
                         fontSize: 40,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       'اختر المغامرة المناسبة لك وابدأ اللعب!',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: textTheme.titleMedium?.copyWith(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
@@ -73,7 +75,7 @@ class LevelSelectionScreen extends StatelessWidget {
                                 elevation: 6,
                                 shadowColor:
                                     const Color(0xFF00695C).withOpacity(0.35),
-                                textStyle: const TextStyle(
+                                textStyle: textTheme.titleMedium?.copyWith(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -106,7 +108,10 @@ class LevelSelectionScreen extends StatelessWidget {
                                       'المستوى 2',
                                       'المستوى 3',
                                     ][index],
-                                    style: const TextStyle(color: Colors.white),
+                                    style: textTheme.titleMedium?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
                                 ],
                               ),
