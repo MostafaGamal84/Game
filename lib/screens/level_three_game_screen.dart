@@ -40,21 +40,23 @@ class LevelThreeGameScreen extends StatefulWidget {
 }
 
 class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
-  final List<_BehaviorScenario> _scenarios = const [
-    _BehaviorScenario(
-      correctAsset: 'assets/images/LevelThree/correct1.png',
-      wrongAsset: 'assets/images/LevelThree/wrong1.png',
+  final List<_BehaviorScenario> _scenarios = List.generate(7, (index) {
+    final sceneNumber = index + 1;
+
+    return _BehaviorScenario(
+      correctAsset: 'assets/images/LevelThree/correct$sceneNumber.png',
+      wrongAsset: 'assets/images/LevelThree/wrong$sceneNumber.png',
       question: 'اختر السلوك الصحيح',
       correctDescription: _BehaviorDescription(
-        title: 'سلوك صحيح !',
-        subtitle: 'رمي القمامة في المكان الصحيح\nتصرف حضاري',
+        title: 'إجابة صحيحة!',
+        subtitle: 'أحسنت! اخترت التصرف الصحيح للمشهد $sceneNumber.',
       ),
       wrongDescription: _BehaviorDescription(
-        title: 'سلوك خاطئ !',
-        subtitle: 'رمي القمامة في المكان الخاطئ\nتصرف غير حضاري',
+        title: 'إجابة غير صحيحة',
+        subtitle: 'هذا التصرف غير صحيح للمشهد $sceneNumber. جرّب مرة أخرى.',
       ),
-    ),
-  ];
+    );
+  });
 
   int _currentIndex = 0;
   _ChoiceState _choiceState = _ChoiceState.initial;
@@ -88,6 +90,13 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
   }
 
   void _handleRetry() {
+    setState(() {
+      _choiceState = _ChoiceState.initial;
+      _selectedOption = null;
+    });
+  }
+
+  void _handleDismissOverlay() {
     setState(() {
       _choiceState = _ChoiceState.initial;
       _selectedOption = null;
@@ -176,24 +185,17 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                       ),
                     ),
                     const Spacer(),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 250),
-                      child: _choiceState == _ChoiceState.initial
-                          ? _ChoicesBoard(
-                              key: const ValueKey('choices'),
-                              scenario: _currentScenario,
-                              selectedOption: _selectedOption,
-                              onSelect: _handleSelect,
-                            )
-                          : _ResultBoard(
-                              key: ValueKey(_choiceState),
-                              scenario: _currentScenario,
-                              isSuccess: _choiceState == _ChoiceState.correct,
-                              selectedOption: _selectedOption,
-                              onRetry: _handleRetry,
-                              onNext: _handleNext,
-                              isLastScenario: _isLastScenario,
-                            ),
+                    IgnorePointer(
+                      ignoring: _choiceState != _ChoiceState.initial,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: _choiceState == _ChoiceState.initial ? 1 : 0.3,
+                        child: _ChoicesBoard(
+                          scenario: _currentScenario,
+                          selectedOption: _selectedOption,
+                          onSelect: _handleSelect,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 32),
                   ],
@@ -201,6 +203,20 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
               ),
             ),
           ),
+          if (_choiceState != _ChoiceState.initial)
+            Positioned.fill(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: _ResultOverlay(
+                  key: ValueKey(_choiceState),
+                  scenario: _currentScenario,
+                  isSuccess: _choiceState == _ChoiceState.correct,
+                  isLastScenario: _isLastScenario,
+                  onPrimary: _choiceState == _ChoiceState.correct ? _handleNext : _handleRetry,
+                  onClose: _handleDismissOverlay,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -325,7 +341,13 @@ class _ChoiceTile extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(6.0),
-                child: Image.asset(assetPath, fit: BoxFit.contain),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    assetPath,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
               if (showCheck)
                 Align(
@@ -367,128 +389,179 @@ class _ChoiceTile extends StatelessWidget {
   }
 }
 
-class _ResultBoard extends StatelessWidget {
-  const _ResultBoard({
+class _ResultOverlay extends StatelessWidget {
+  const _ResultOverlay({
     super.key,
     required this.scenario,
     required this.isSuccess,
-    required this.onNext,
-    required this.onRetry,
     required this.isLastScenario,
-    required this.selectedOption,
+    required this.onPrimary,
+    required this.onClose,
   });
 
   final _BehaviorScenario scenario;
   final bool isSuccess;
-  final VoidCallback onNext;
-  final VoidCallback onRetry;
   final bool isLastScenario;
-  final _BehaviorOptionType? selectedOption;
+  final VoidCallback onPrimary;
+  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final description = isSuccess ? scenario.correctDescription : scenario.wrongDescription;
     final asset = isSuccess ? scenario.correctAsset : scenario.wrongAsset;
+    final indicatorColor = isSuccess ? const Color(0xFF00B894) : const Color(0xFFD63031);
+    final indicatorIcon = isSuccess ? Icons.check : Icons.close;
+    final primaryLabel = isSuccess
+        ? (isLastScenario ? 'إنهاء' : 'متابعة')
+        : 'متابعة';
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.92),
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.18),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: Stack(
+    return Material(
+      color: Colors.black.withOpacity(0.75),
+      child: SafeArea(
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Column(
               children: [
-                Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Container(
-                      color: const Color(0xFFEFF6F4),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Image.asset(asset, fit: BoxFit.contain),
-                      ),
-                    ),
+                Align(
+                  alignment: AlignmentDirectional.topEnd,
+                  child: IconButton(
+                    onPressed: onClose,
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    tooltip: 'إغلاق',
                   ),
                 ),
-                if (isSuccess && selectedOption == _BehaviorOptionType.correct)
-                  Positioned(
-                    top: 16,
-                    left: 16,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0xFF00B894),
+                const Spacer(),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.20),
+                        blurRadius: 22,
+                        offset: const Offset(0, 12),
                       ),
-                      padding: const EdgeInsets.all(8),
-                      child: const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 26,
-                      ),
-                    ),
+                    ],
                   ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 1,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(28),
+                                child: Container(
+                                  color: const Color(0xFFEFF6F4),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Image.asset(
+                                      asset,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 16,
+                              left: 16,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: indicatorColor,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: indicatorColor.withOpacity(0.35),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                child: Icon(
+                                  indicatorIcon,
+                                  color: Colors.white,
+                                  size: 26,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        description.title,
+                        style: textTheme.headlineSmall?.copyWith(
+                          color: indicatorColor,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        description.subtitle,
+                        textAlign: TextAlign.center,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: const Color(0xFF3B3B3B),
+                          fontWeight: FontWeight.w600,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: indicatorColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(22),
+                            ),
+                            textStyle: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 20,
+                            ),
+                          ),
+                          onPressed: onPrimary,
+                          child: Text(primaryLabel),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: indicatorColor.withOpacity(0.6)),
+                            foregroundColor: indicatorColor,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            textStyle: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          onPressed: onClose,
+                          child: const Text('إغلاق'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
               ],
             ),
           ),
-          const SizedBox(height: 24),
-          Text(
-            description.title,
-            style: textTheme.headlineSmall?.copyWith(
-              color: isSuccess ? const Color(0xFF1E6F5C) : const Color(0xFFD63031),
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            description.subtitle,
-            textAlign: TextAlign.center,
-            style: textTheme.titleMedium?.copyWith(
-              color: const Color(0xFF3B3B3B),
-              fontWeight: FontWeight.w600,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isSuccess ? const Color(0xFF1E6F5C) : const Color(0xFFD63031),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                textStyle: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 20,
-                ),
-              ),
-              onPressed: isSuccess ? onNext : onRetry,
-              child: Text(
-                isSuccess
-                    ? (isLastScenario ? 'إنهاء' : 'التالي')
-                    : 'حاول مرة أخرى',
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
-
 }

@@ -86,6 +86,18 @@ flutter:
     - assets/images/LevelThree/sad.png
     - assets/images/LevelThree/correct1.png
     - assets/images/LevelThree/wrong1.png
+    - assets/images/LevelThree/correct2.png
+    - assets/images/LevelThree/wrong2.png
+    - assets/images/LevelThree/correct3.png
+    - assets/images/LevelThree/wrong3.png
+    - assets/images/LevelThree/correct4.png
+    - assets/images/LevelThree/wrong4.png
+    - assets/images/LevelThree/correct5.png
+    - assets/images/LevelThree/wrong5.png
+    - assets/images/LevelThree/correct6.png
+    - assets/images/LevelThree/wrong6.png
+    - assets/images/LevelThree/correct7.png
+    - assets/images/LevelThree/wrong7.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
