@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'level_two_game_screen.dart';
+
 class LevelTwoIntroScreen extends StatelessWidget {
   const LevelTwoIntroScreen({super.key});
 
@@ -64,7 +66,11 @@ class LevelTwoIntroScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          // TODO: Navigate to the actual level two gameplay screen
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const LevelTwoGameScreen(),
+                            ),
+                          );
                         },
                         child: const Text('ابدأ اللعب'),
                       ),
