@@ -12,66 +12,64 @@ class LevelTwoGameScreen extends StatefulWidget {
 }
 
 class _LevelTwoGameScreenState extends State<LevelTwoGameScreen> {
-  static const _aspectRatio = 440 / 956;
-
   final List<_ViolationSpot> _spots = const [
     _ViolationSpot(
       id: 'kite',
-      area: Rect.fromLTWH(0.09, 0.03, 0.22, 0.12),
+      area: Rect.fromLTWH(0.24, 0.03, 0.22, 0.15),
       title: 'طائرة ورقية عالقة',
       description: 'ترك الطائرة الورقية عالقة في المبنى يشوّه المنظر العام وقد يتسبب في تلف السطح.',
     ),
     _ViolationSpot(
       id: 'looseFence',
-      area: Rect.fromLTWH(0.54, 0.06, 0.24, 0.12),
+      area: Rect.fromLTWH(0.56, 0.09, 0.24, 0.12),
       title: 'سياج غير مثبت',
       description: 'السياج الخشبي المائل فوق السطح غير آمن ويعطي انطباعاً بالإهمال.',
     ),
     _ViolationSpot(
       id: 'satelliteDish',
-      area: Rect.fromLTWH(0.07, 0.24, 0.22, 0.11),
+      area: Rect.fromLTWH(0.1, 0.25, 0.22, 0.11),
       title: 'طبق استقبال مائل',
       description: 'الأطباق المثبتة بشكل عشوائي على الواجهات تسبب خطراً بصرياً وقد تسقط.',
     ),
     _ViolationSpot(
       id: 'graffitiLeft',
-      area: Rect.fromLTWH(0.18, 0.36, 0.18, 0.08),
+      area: Rect.fromLTWH(0.24, 0.38, 0.18, 0.08),
       title: 'كتابة على الجدار',
       description: 'الكتابة العشوائية على الجدران تعد تشوهاً بصرياً وتخالف الذوق العام.',
     ),
     _ViolationSpot(
       id: 'graffitiRight',
-      area: Rect.fromLTWH(0.66, 0.39, 0.2, 0.08),
+      area: Rect.fromLTWH(0.62, 0.41, 0.2, 0.08),
       title: 'ملصق مخالف',
       description: 'تعليق الملصقات الإعلانية دون إذن يشوه واجهة المبنى.',
     ),
     _ViolationSpot(
       id: 'acLeft',
-      area: Rect.fromLTWH(0.24, 0.49, 0.2, 0.11),
+      area: Rect.fromLTWH(0.24, 0.51, 0.2, 0.11),
       title: 'مكيف مكشوف',
       description: 'المكيف الموضوع دون غطاء يحجب جمال الواجهة وقد يتسرب منه الماء.',
     ),
     _ViolationSpot(
       id: 'acRight',
-      area: Rect.fromLTWH(0.58, 0.49, 0.2, 0.11),
+      area: Rect.fromLTWH(0.56, 0.51, 0.2, 0.11),
       title: 'مكيف بحاجة لصيانة',
       description: 'عدم صيانة أجهزة التكييف الخارجية يظهر أسلاكاً متدلية ويشوه المنظر.',
     ),
     _ViolationSpot(
       id: 'sign',
-      area: Rect.fromLTWH(0.6, 0.64, 0.22, 0.12),
+      area: Rect.fromLTWH(0.66, 0.7, 0.2, 0.15),
       title: 'لافتة متضررة',
       description: 'اللافتة الباهتة والمكسورة تقلل من جاذبية المحل وتخالف اللوائح.',
     ),
     _ViolationSpot(
       id: 'numberPlate',
-      area: Rect.fromLTWH(0.36, 0.6, 0.2, 0.08),
+      area: Rect.fromLTWH(0.38, 0.63, 0.22, 0.08),
       title: 'لوحة رقم غير واضحة',
       description: 'ترك لوحة العنوان متسخة أو مائلة يصعب قراءة الرقم ويشوه المظهر.',
     ),
     _ViolationSpot(
       id: 'storeClutter',
-      area: Rect.fromLTWH(0.12, 0.69, 0.22, 0.14),
+      area: Rect.fromLTWH(0.14, 0.73, 0.22, 0.16),
       title: 'مدخل غير منظم',
       description: 'تكدس الأدوات أمام المحل يمنع المرور ويعطي انطباعاً بالفوضى.',
     ),
@@ -123,16 +121,19 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            'assets/images/levelBackground.png',
-            fit: BoxFit.cover,
+          _LevelTwoScene(
+            spots: _spots,
+            found: _found,
+            onSpotTap: _handleSpotTap,
           ),
           SafeArea(
             child: Directionality(
               textDirection: TextDirection.rtl,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Row(
                       children: [
@@ -198,34 +199,6 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Expanded(
-                      child: Center(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final maxHeight = constraints.maxHeight;
-                            final maxWidth = constraints.maxWidth;
-                            double desiredWidth = maxHeight * _aspectRatio;
-                            double desiredHeight = maxHeight;
-
-                            if (desiredWidth > maxWidth) {
-                              desiredWidth = maxWidth;
-                              desiredHeight = desiredWidth / _aspectRatio;
-                            }
-
-                            return SizedBox(
-                              width: desiredWidth,
-                              height: desiredHeight,
-                              child: _LevelTwoImage(
-                                spots: _spots,
-                                found: _found,
-                                onSpotTap: _handleSpotTap,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -243,12 +216,15 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen> {
   }
 }
 
-class _LevelTwoImage extends StatelessWidget {
-  const _LevelTwoImage({
+class _LevelTwoScene extends StatelessWidget {
+  const _LevelTwoScene({
     required this.spots,
     required this.found,
     required this.onSpotTap,
   });
+
+  static const double _designWidth = 440;
+  static const double _designHeight = 956;
 
   final List<_ViolationSpot> spots;
   final Set<String> found;
@@ -256,44 +232,48 @@ class _LevelTwoImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(26),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth;
-          final height = constraints.maxHeight;
-
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset(
-                'assets/images/LevelTwo/levelTwoBackground.jpg',
-                fit: BoxFit.cover,
-              ),
-              ...spots.map((spot) {
-                final rect = Rect.fromLTWH(
-                  spot.area.left * width,
-                  spot.area.top * height,
-                  spot.area.width * width,
-                  spot.area.height * height,
-                );
-                final isFound = found.contains(spot.id);
-
-                return Positioned(
-                  left: rect.left,
-                  top: rect.top,
-                  width: rect.width,
-                  height: rect.height,
-                  child: _ViolationHitBox(
-                    isFound: isFound,
-                    onTap: () => onSpotTap(spot),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return FittedBox(
+          fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
+          clipBehavior: Clip.hardEdge,
+          child: SizedBox(
+            width: _designWidth,
+            height: _designHeight,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/LevelTwo/levelTwoBackground.jpg',
+                    fit: BoxFit.fill,
                   ),
-                );
-              }),
-            ],
-          );
-        },
-      ),
+                ),
+                ...spots.map((spot) {
+                  final rect = Rect.fromLTWH(
+                    spot.area.left * _designWidth,
+                    spot.area.top * _designHeight,
+                    spot.area.width * _designWidth,
+                    spot.area.height * _designHeight,
+                  );
+                  final isFound = found.contains(spot.id);
+
+                  return Positioned(
+                    left: rect.left,
+                    top: rect.top,
+                    width: rect.width,
+                    height: rect.height,
+                    child: _ViolationHitBox(
+                      isFound: isFound,
+                      onTap: () => onSpotTap(spot),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
