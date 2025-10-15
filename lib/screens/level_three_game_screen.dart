@@ -12,26 +12,16 @@ class _BehaviorScenario {
   const _BehaviorScenario({
     required this.correctAsset,
     required this.wrongAsset,
-    required this.question,
-    required this.correctDescription,
-    required this.wrongDescription,
+    required this.title,
+    required this.correctMessage,
+    required this.wrongMessage,
   });
 
   final String correctAsset;
   final String wrongAsset;
-  final String question;
-  final _BehaviorDescription correctDescription;
-  final _BehaviorDescription wrongDescription;
-}
-
-class _BehaviorDescription {
-  const _BehaviorDescription({
-    required this.title,
-    required this.subtitle,
-  });
-
   final String title;
-  final String subtitle;
+  final String correctMessage;
+  final String wrongMessage;
 }
 
 class LevelThreeGameScreen extends StatefulWidget {
@@ -42,23 +32,71 @@ class LevelThreeGameScreen extends StatefulWidget {
 }
 
 class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
-  final List<_BehaviorScenario> _scenarios = List.generate(7, (index) {
-    final sceneNumber = index + 1;
-
-    return _BehaviorScenario(
-      correctAsset: 'assets/images/LevelThree/correct$sceneNumber.png',
-      wrongAsset: 'assets/images/LevelThree/wrong$sceneNumber.png',
-      question: 'اختر السلوك الصحيح',
-      correctDescription: _BehaviorDescription(
-        title: 'أحسنت!',
-        subtitle: 'اخترت التصرف الصحيح للمشهد $sceneNumber. سيتم الانتقال للمشهد التالي تلقائيًا.',
-      ),
-      wrongDescription: _BehaviorDescription(
-        title: 'إجابة غير صحيحة',
-        subtitle: 'هذا التصرف غير صحيح للمشهد $sceneNumber. اقرأ التوجيه ثم جرّب مرة أخرى.',
-      ),
-    );
-  });
+  final List<_BehaviorScenario> _scenarios = const [
+    _BehaviorScenario(
+      correctAsset: 'assets/images/LevelThree/correct1.png',
+      wrongAsset: 'assets/images/LevelThree/wrong1.png',
+      title: 'المشهد 1: رمي القمامة في المكان الخاطئ',
+      correctMessage:
+          'وضع النفايات في الحاوية يحافظ على نظافة الحي. إذا شاهدت من يرميها عشوائياً، اتصل على 940 للإبلاغ.',
+      wrongMessage:
+          'رمي القمامة في الأرض يضر بالبيئة ويزعج الآخرين. ابحث عن الصورة التي تظهر التخلص السليم وأبلغ 940 عند رؤية المخالفة.',
+    ),
+    _BehaviorScenario(
+      correctAsset: 'assets/images/LevelThree/correct2.png',
+      wrongAsset: 'assets/images/LevelThree/wrong2.png',
+      title: 'المشهد 2: الكتابة المشوهة على الجدران',
+      correctMessage:
+          'الحفاظ على الجدران نظيفة يعكس جمال المدينة. بلّغ عن الكتابة العشوائية بالاتصال على 940.',
+      wrongMessage:
+          'تشويه الجدران يخرب الممتلكات العامة. اختر التصرف الصحيح وتواصل مع 940 عند ملاحظة هذه المخالفة.',
+    ),
+    _BehaviorScenario(
+      correctAsset: 'assets/images/LevelThree/correct3.png',
+      wrongAsset: 'assets/images/LevelThree/wrong3.png',
+      title: 'المشهد 3: عبور الطريق من المكان الخاطئ',
+      correctMessage:
+          'العبور من المسار المخصص يحميك ويحمي الآخرين. في حال وجود عبور خاطئ أبلغ 940.',
+      wrongMessage:
+          'عبور الطريق بشكل عشوائي يعرض الجميع للخطر. اختر السلوك الصحيح وبلغ 940 عند الحاجة.',
+    ),
+    _BehaviorScenario(
+      correctAsset: 'assets/images/LevelThree/correct4.png',
+      wrongAsset: 'assets/images/LevelThree/wrong4.png',
+      title: 'المشهد 4: قيادة الدراجة في مسار السيارات',
+      correctMessage:
+          'استخدام مسار الدراجات يمنع الحوادث ويحافظ على النظام. أبلغ 940 إذا رأيت دراجات تحتل مسار السيارات.',
+      wrongMessage:
+          'قيادة الدراجة في مسار السيارات خطر وغير منظم. حدد التصرف السليم وأخبر 940 عن أي تجاوز.',
+    ),
+    _BehaviorScenario(
+      correctAsset: 'assets/images/LevelThree/correct5.png',
+      wrongAsset: 'assets/images/LevelThree/wrong5.png',
+      title: 'المشهد 5: عدم تنظيم المكان بعد الاستخدام',
+      correctMessage:
+          'ترتيب المكان بعد الانتهاء يدل على المسؤولية. إن صادفت فوضى مشابهة، بلّغ 940.',
+      wrongMessage:
+          'ترك المكان فوضوياً يزعج الآخرين. اختر المشهد المنظم وتواصل مع 940 للإبلاغ عن المخالفات.',
+    ),
+    _BehaviorScenario(
+      correctAsset: 'assets/images/LevelThree/correct6.png',
+      wrongAsset: 'assets/images/LevelThree/wrong6.png',
+      title: 'المشهد 6: إطعام الحمام في الشارع',
+      correctMessage:
+          'تجنب إطعام الطيور في الطرق يحافظ على النظافة. أبلغ 940 عند مشاهدة هذه المخالفة.',
+      wrongMessage:
+          'إطعام الحمام في الشارع يجلب الأوساخ والحشرات. حدد السلوك الصحيح واتصل على 940 إذا تكرر الأمر.',
+    ),
+    _BehaviorScenario(
+      correctAsset: 'assets/images/LevelThree/correct7.png',
+      wrongAsset: 'assets/images/LevelThree/wrong7.png',
+      title: 'المشهد 7: تجاهل المخاطر أو التصرفات الخاطئة',
+      correctMessage:
+          'الإبلاغ عن المخاطر هو السلوك الصحيح. اتصل فوراً على 940 لحماية الجميع.',
+      wrongMessage:
+          'تجاهل السلوكيات الخاطئة يفاقم المشكلة. اختر الحل الصحيح ولا تتردد بالاتصال على 940.',
+    ),
+  ];
 
   int _currentIndex = 0;
   _ChoiceState _choiceState = _ChoiceState.initial;
@@ -71,7 +109,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
       case _ChoiceState.correct:
         return 'assets/images/LevelThree/happy.jpg';
       case _ChoiceState.wrong:
-        return 'assets/images/LevelThree/sad.jpg';
+        return 'assets/images/LevelThree/sad.png';
     }
   }
 
@@ -170,30 +208,24 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      _choiceState == _ChoiceState.initial
-                          ? _currentScenario.question
-                          : _choiceState == _ChoiceState.correct
-                              ? _currentScenario.correctDescription.title
-                              : _currentScenario.wrongDescription.title,
-                      style: textTheme.headlineSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
+                    if (_choiceState == _ChoiceState.initial) ...[
+                      Text(
+                        _currentScenario.title,
+                        style: textTheme.headlineSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      _choiceState == _ChoiceState.initial
-                          ? 'فكر جيدًا واختر الصورة التي تمثل التصرف السليم.'
-                          : _choiceState == _ChoiceState.correct
-                              ? _currentScenario.correctDescription.subtitle
-                              : _currentScenario.wrongDescription.subtitle,
-                      style: textTheme.titleMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        height: 1.4,
+                      const SizedBox(height: 12),
+                      Text(
+                        'فكر جيدًا واختر الصورة التي تمثل التصرف السليم.',
+                        style: textTheme.titleMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          height: 1.4,
+                        ),
                       ),
-                    ),
+                    ],
                     const Spacer(),
                     _ChoicesBoard(
                       scenario: _currentScenario,
@@ -280,11 +312,11 @@ class _ChoicesBoard extends StatelessWidget {
                           isInteractive: choiceState == _ChoiceState.initial,
                           onTap: () => onSelect(_BehaviorOptionType.wrong),
                         )
-                      : _ExplanationCard(
+                      : _MessageCard(
                           key: ValueKey<_ChoiceState>(choiceState),
-                          description: choiceState == _ChoiceState.correct
-                              ? scenario.correctDescription
-                              : scenario.wrongDescription,
+                          message: choiceState == _ChoiceState.correct
+                              ? scenario.correctMessage
+                              : scenario.wrongMessage,
                           isSuccess: choiceState == _ChoiceState.correct,
                           onRetry: choiceState == _ChoiceState.wrong ? onRetry : null,
                         ),
@@ -381,15 +413,15 @@ class _ChoiceTile extends StatelessWidget {
   }
 }
 
-class _ExplanationCard extends StatelessWidget {
-  const _ExplanationCard({
+class _MessageCard extends StatelessWidget {
+  const _MessageCard({
     super.key,
-    required this.description,
+    required this.message,
     required this.isSuccess,
     this.onRetry,
   });
 
-  final _BehaviorDescription description;
+  final String message;
   final bool isSuccess;
   final VoidCallback? onRetry;
 
@@ -417,20 +449,13 @@ class _ExplanationCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            description.title,
-            style: textTheme.titleMedium?.copyWith(
-              color: accent,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            description.subtitle,
+            message,
             style: textTheme.titleMedium?.copyWith(
               color: const Color(0xFF184F4A),
               fontWeight: FontWeight.w600,
               height: 1.4,
             ),
+            textAlign: TextAlign.start,
           ),
           if (!isSuccess && onRetry != null) ...[
             const SizedBox(height: 20),
