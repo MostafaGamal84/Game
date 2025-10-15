@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'level_three_placeholder_screen.dart';
+import 'level_three_game_screen.dart';
 
 class LevelThreeIntroScreen extends StatelessWidget {
   const LevelThreeIntroScreen({super.key});
@@ -68,7 +68,7 @@ class LevelThreeIntroScreen extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => const LevelThreePlaceholderScreen(),
+                              builder: (_) => const LevelThreeGameScreen(),
                             ),
                           );
                         },
