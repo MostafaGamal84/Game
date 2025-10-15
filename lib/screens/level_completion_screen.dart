@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'level_selection_screen.dart';
+import 'start_screen.dart';
 
 class LevelCompletionScreen extends StatelessWidget {
   const LevelCompletionScreen({super.key});
@@ -17,6 +17,9 @@ class LevelCompletionScreen extends StatelessWidget {
             'assets/images/levelBackground.png',
             fit: BoxFit.cover,
           ),
+          Container(
+            color: Colors.black.withOpacity(0.35),
+          ),
           SafeArea(
             child: Directionality(
               textDirection: TextDirection.rtl,
@@ -26,81 +29,68 @@ class LevelCompletionScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(32),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF1E6F5C).withOpacity(0.35),
-                            blurRadius: 28,
-                            offset: const Offset(0, 18),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFF1E6F5C),
-                            ),
-                            child: const Icon(
-                              Icons.emoji_events_rounded,
+                    Flexible(
+                      flex: 4,
+                      child: FractionallySizedBox(
+                        widthFactor: 0.9,
+                        child: AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Container(
+                            decoration: BoxDecoration(
                               color: Colors.white,
-                              size: 48,
-                            ),
-                          ),
-                          const SizedBox(height: 18),
-                          Text(
-                            'أحسنت!',
-                            textAlign: TextAlign.center,
-                            style: textTheme.displaySmall?.copyWith(
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF1E6F5C),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'لقد أنهيت جميع الصور بنجاح. استمر في اكتشاف المزيد من المشاهد الجميلة!',
-                            textAlign: TextAlign.center,
-                            style: textTheme.titleMedium?.copyWith(
-                              fontSize: 20,
-                              height: 1.5,
-                              color: const Color(0xFF3B3B3B),
-                            ),
-                          ),
-                          const SizedBox(height: 28),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF1E6F5C),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(32),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.25),
+                                  blurRadius: 28,
+                                  offset: const Offset(0, 18),
                                 ),
-                                textStyle: textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 20,
-                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(16),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(24),
+                              child: Image.asset(
+                                'assets/images/finish.png',
+                                fit: BoxFit.cover,
                               ),
-                              onPressed: () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder: (_) => const LevelSelectionScreen(),
-                                  ),
-                                  (route) => route.isFirst,
-                                );
-                              },
-                              child: const Text('العودة إلى قائمة المراحل'),
                             ),
                           ),
-                        ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Flexible(
+                      flex: 1,
+                      child: SizedBox(
+                        width: 220,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.home_rounded),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1E6F5C),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                            ),
+                            textStyle: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 20,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (_) => const StartScreen(),
+                              ),
+                              (route) => false,
+                            );
+                          },
+                          label: const Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: Text('العودة للشاشة الرئيسية'),
+                          ),
+                        ),
                       ),
                     ),
                   ],
