@@ -71,7 +71,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
       case _ChoiceState.correct:
         return 'assets/images/LevelThree/happy.jpg';
       case _ChoiceState.wrong:
-        return 'assets/images/LevelThree/sad.png';
+        return 'assets/images/LevelThree/sad.jpg';
     }
   }
 
