@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'level_one_screen.dart';
 import 'level_two_intro_screen.dart';
+import 'level_three_intro_screen.dart';
 
 class LevelSelectionScreen extends StatelessWidget {
   const LevelSelectionScreen({super.key});
@@ -93,6 +94,12 @@ class LevelSelectionScreen extends StatelessWidget {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (_) => const LevelTwoIntroScreen(),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const LevelThreeIntroScreen(),
                                     ),
                                   );
                                 }

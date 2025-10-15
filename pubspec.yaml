@@ -80,6 +80,7 @@ flutter:
     - assets\images\LevelTwo\finishLevelTwo.jpg
     - assets\sounds\correct.mp3
     - assets\sounds\claim.mp3
+    - assets/images/LevelThree/levelThreeBackground.jpg
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
