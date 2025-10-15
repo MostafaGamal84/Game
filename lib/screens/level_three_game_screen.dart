@@ -37,64 +37,52 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
       correctAsset: 'assets/images/LevelThree/correct1.png',
       wrongAsset: 'assets/images/LevelThree/wrong1.png',
       title: 'المشهد 1: رمي القمامة في المكان الخاطئ',
-      correctMessage:
-          'وضع النفايات في الحاوية يحافظ على نظافة الحي. إذا شاهدت من يرميها عشوائياً، اتصل على 940 للإبلاغ.',
-      wrongMessage:
-          'رمي القمامة في الأرض يضر بالبيئة ويزعج الآخرين. ابحث عن الصورة التي تظهر التخلص السليم وأبلغ 940 عند رؤية المخالفة.',
+      correctMessage: 'رمي القمامة في الحاوية يحافظ على نظافة المكان.',
+      wrongMessage: 'إلقاء القمامة على الأرض يسبب الفوضى. جرب اختيار التصرف السليم.',
     ),
     _BehaviorScenario(
       correctAsset: 'assets/images/LevelThree/correct2.png',
       wrongAsset: 'assets/images/LevelThree/wrong2.png',
       title: 'المشهد 2: الكتابة المشوهة على الجدران',
-      correctMessage:
-          'الحفاظ على الجدران نظيفة يعكس جمال المدينة. بلّغ عن الكتابة العشوائية بالاتصال على 940.',
-      wrongMessage:
-          'تشويه الجدران يخرب الممتلكات العامة. اختر التصرف الصحيح وتواصل مع 940 عند ملاحظة هذه المخالفة.',
+      correctMessage: 'الكتابة في الأماكن المخصصة تحافظ على جمال الجدران.',
+      wrongMessage: 'تشويه الجدران بالكتابة يفسد المنظر العام.',
     ),
     _BehaviorScenario(
       correctAsset: 'assets/images/LevelThree/correct3.png',
       wrongAsset: 'assets/images/LevelThree/wrong3.png',
       title: 'المشهد 3: عبور الطريق من المكان الخاطئ',
-      correctMessage:
-          'العبور من المسار المخصص يحميك ويحمي الآخرين. في حال وجود عبور خاطئ أبلغ 940.',
-      wrongMessage:
-          'عبور الطريق بشكل عشوائي يعرض الجميع للخطر. اختر السلوك الصحيح وبلغ 940 عند الحاجة.',
+      correctMessage: 'العبور من ممر المشاة يحميك ويحافظ على النظام.',
+      wrongMessage: 'عبور الطريق عشوائياً يعرضك والآخرين للخطر.',
     ),
     _BehaviorScenario(
       correctAsset: 'assets/images/LevelThree/correct4.png',
       wrongAsset: 'assets/images/LevelThree/wrong4.png',
       title: 'المشهد 4: قيادة الدراجة في مسار السيارات',
-      correctMessage:
-          'استخدام مسار الدراجات يمنع الحوادث ويحافظ على النظام. أبلغ 940 إذا رأيت دراجات تحتل مسار السيارات.',
-      wrongMessage:
-          'قيادة الدراجة في مسار السيارات خطر وغير منظم. حدد التصرف السليم وأخبر 940 عن أي تجاوز.',
+      correctMessage: 'قيادة الدراجة في مسارها المخصص تبقي الجميع بأمان.',
+      wrongMessage: 'التواجد بالدراجة في مسار السيارات يعيق الحركة.',
     ),
     _BehaviorScenario(
       correctAsset: 'assets/images/LevelThree/correct5.png',
       wrongAsset: 'assets/images/LevelThree/wrong5.png',
       title: 'المشهد 5: عدم تنظيم المكان بعد الاستخدام',
-      correctMessage:
-          'ترتيب المكان بعد الانتهاء يدل على المسؤولية. إن صادفت فوضى مشابهة، بلّغ 940.',
-      wrongMessage:
-          'ترك المكان فوضوياً يزعج الآخرين. اختر المشهد المنظم وتواصل مع 940 للإبلاغ عن المخالفات.',
+      correctMessage: 'ترتيب المكان بعد الاستخدام يعكس احترامك للآخرين.',
+      wrongMessage: 'ترك المكان فوضوياً يزعج كل من يستخدمه بعدك.',
     ),
     _BehaviorScenario(
       correctAsset: 'assets/images/LevelThree/correct6.png',
       wrongAsset: 'assets/images/LevelThree/wrong6.png',
       title: 'المشهد 6: إطعام الحمام في الشارع',
-      correctMessage:
-          'تجنب إطعام الطيور في الطرق يحافظ على النظافة. أبلغ 940 عند مشاهدة هذه المخالفة.',
-      wrongMessage:
-          'إطعام الحمام في الشارع يجلب الأوساخ والحشرات. حدد السلوك الصحيح واتصل على 940 إذا تكرر الأمر.',
+      correctMessage: 'تجنب إطعام الطيور في الطريق يحافظ على النظافة.',
+      wrongMessage: 'إطعام الحمام في الشارع يجذب الحشرات والأوساخ.',
     ),
     _BehaviorScenario(
       correctAsset: 'assets/images/LevelThree/correct7.png',
       wrongAsset: 'assets/images/LevelThree/wrong7.png',
       title: 'المشهد 7: تجاهل المخاطر أو التصرفات الخاطئة',
       correctMessage:
-          'الإبلاغ عن المخاطر هو السلوك الصحيح. اتصل فوراً على 940 لحماية الجميع.',
+          'الإبلاغ عن السلوكيات الخطرة يحمي الجميع. اتصل على 940 عند ملاحظتها.',
       wrongMessage:
-          'تجاهل السلوكيات الخاطئة يفاقم المشكلة. اختر الحل الصحيح ولا تتردد بالاتصال على 940.',
+          'تجاهل المخاطر يجعلها تتكرر. أخبر الجهات المختصة عبر 940.',
     ),
   ];
 
