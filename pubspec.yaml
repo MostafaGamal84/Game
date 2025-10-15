@@ -83,7 +83,6 @@ flutter:
     - assets/images/LevelThree/levelThreeBackground.jpg
     - assets/images/LevelThree/thinking.jpg
     - assets/images/LevelThree/happy.jpg
-    - assets/images/LevelThree/sad.png
     - assets/images/LevelThree/correct1.png
     - assets/images/LevelThree/wrong1.png
     - assets/images/LevelThree/correct2.png
