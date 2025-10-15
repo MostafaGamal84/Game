@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'level_completion_screen.dart';
@@ -48,19 +50,19 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
       wrongAsset: 'assets/images/LevelThree/wrong$sceneNumber.png',
       question: 'اختر السلوك الصحيح',
       correctDescription: _BehaviorDescription(
-        title: 'إجابة صحيحة!',
-        subtitle: 'أحسنت! اخترت التصرف الصحيح للمشهد $sceneNumber.',
+        title: 'أحسنت!',
+        subtitle: 'اخترت التصرف الصحيح للمشهد $sceneNumber. سيتم الانتقال للمشهد التالي تلقائيًا.',
       ),
       wrongDescription: _BehaviorDescription(
         title: 'إجابة غير صحيحة',
-        subtitle: 'هذا التصرف غير صحيح للمشهد $sceneNumber. جرّب مرة أخرى.',
+        subtitle: 'هذا التصرف غير صحيح للمشهد $sceneNumber. اقرأ التوجيه ثم جرّب مرة أخرى.',
       ),
     );
   });
 
   int _currentIndex = 0;
   _ChoiceState _choiceState = _ChoiceState.initial;
-  _BehaviorOptionType? _selectedOption;
+  Timer? _advanceTimer;
 
   String get _currentBackground {
     switch (_choiceState) {
@@ -83,27 +85,30 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
     }
 
     setState(() {
-      _selectedOption = type;
       _choiceState =
           type == _BehaviorOptionType.correct ? _ChoiceState.correct : _ChoiceState.wrong;
     });
+
+    if (type == _BehaviorOptionType.correct) {
+      _advanceTimer?.cancel();
+      _advanceTimer = Timer(const Duration(seconds: 2), _handleNext);
+    }
   }
 
   void _handleRetry() {
     setState(() {
       _choiceState = _ChoiceState.initial;
-      _selectedOption = null;
-    });
-  }
-
-  void _handleDismissOverlay() {
-    setState(() {
-      _choiceState = _ChoiceState.initial;
-      _selectedOption = null;
     });
   }
 
   void _handleNext() {
+    _advanceTimer?.cancel();
+    _advanceTimer = null;
+
+    if (!mounted) {
+      return;
+    }
+
     if (_isLastScenario) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const LevelCompletionScreen()),
@@ -112,9 +117,14 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
       setState(() {
         _currentIndex++;
         _choiceState = _ChoiceState.initial;
-        _selectedOption = null;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _advanceTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -185,17 +195,11 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                       ),
                     ),
                     const Spacer(),
-                    IgnorePointer(
-                      ignoring: _choiceState != _ChoiceState.initial,
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 200),
-                        opacity: _choiceState == _ChoiceState.initial ? 1 : 0.3,
-                        child: _ChoicesBoard(
-                          scenario: _currentScenario,
-                          selectedOption: _selectedOption,
-                          onSelect: _handleSelect,
-                        ),
-                      ),
+                    _ChoicesBoard(
+                      scenario: _currentScenario,
+                      choiceState: _choiceState,
+                      onSelect: _handleSelect,
+                      onRetry: _handleRetry,
                     ),
                     const SizedBox(height: 32),
                   ],
@@ -203,20 +207,6 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
               ),
             ),
           ),
-          if (_choiceState != _ChoiceState.initial)
-            Positioned.fill(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
-                child: _ResultOverlay(
-                  key: ValueKey(_choiceState),
-                  scenario: _currentScenario,
-                  isSuccess: _choiceState == _ChoiceState.correct,
-                  isLastScenario: _isLastScenario,
-                  onPrimary: _choiceState == _ChoiceState.correct ? _handleNext : _handleRetry,
-                  onClose: _handleDismissOverlay,
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -227,13 +217,15 @@ class _ChoicesBoard extends StatelessWidget {
   const _ChoicesBoard({
     super.key,
     required this.scenario,
+    required this.choiceState,
     required this.onSelect,
-    required this.selectedOption,
+    required this.onRetry,
   });
 
   final _BehaviorScenario scenario;
+  final _ChoiceState choiceState;
   final ValueChanged<_BehaviorOptionType> onSelect;
-  final _BehaviorOptionType? selectedOption;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -270,17 +262,32 @@ class _ChoicesBoard extends StatelessWidget {
                 child: _ChoiceTile(
                   assetPath: scenario.correctAsset,
                   type: _BehaviorOptionType.correct,
-                  selectedOption: selectedOption,
+                  choiceState: choiceState,
+                  isInteractive: choiceState == _ChoiceState.initial,
                   onTap: () => onSelect(_BehaviorOptionType.correct),
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: _ChoiceTile(
-                  assetPath: scenario.wrongAsset,
-                  type: _BehaviorOptionType.wrong,
-                  selectedOption: selectedOption,
-                  onTap: () => onSelect(_BehaviorOptionType.wrong),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: choiceState == _ChoiceState.initial
+                      ? _ChoiceTile(
+                          key: const ValueKey('wrong_choice'),
+                          assetPath: scenario.wrongAsset,
+                          type: _BehaviorOptionType.wrong,
+                          choiceState: choiceState,
+                          isInteractive: choiceState == _ChoiceState.initial,
+                          onTap: () => onSelect(_BehaviorOptionType.wrong),
+                        )
+                      : _ExplanationCard(
+                          key: ValueKey<_ChoiceState>(choiceState),
+                          description: choiceState == _ChoiceState.correct
+                              ? scenario.correctDescription
+                              : scenario.wrongDescription,
+                          isSuccess: choiceState == _ChoiceState.correct,
+                          onRetry: choiceState == _ChoiceState.wrong ? onRetry : null,
+                        ),
                 ),
               ),
             ],
@@ -293,25 +300,28 @@ class _ChoicesBoard extends StatelessWidget {
 
 class _ChoiceTile extends StatelessWidget {
   const _ChoiceTile({
+    super.key,
     required this.assetPath,
     required this.type,
-    required this.selectedOption,
+    required this.choiceState,
+    required this.isInteractive,
     required this.onTap,
   });
 
   final String assetPath;
   final _BehaviorOptionType type;
-  final _BehaviorOptionType? selectedOption;
+  final _ChoiceState choiceState;
+  final bool isInteractive;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final bool isSelected = selectedOption == type;
-    final bool showCheck = type == _BehaviorOptionType.correct && isSelected;
-    final bool showCross = type == _BehaviorOptionType.wrong && isSelected;
+    final bool highlightCorrect =
+        type == _BehaviorOptionType.correct && choiceState != _ChoiceState.initial;
+    final bool showCheck = highlightCorrect;
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: isInteractive ? onTap : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
@@ -319,11 +329,9 @@ class _ChoiceTile extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: showCheck
+            color: highlightCorrect
                 ? const Color(0xFF00B894)
-                : showCross
-                    ? const Color(0xFFD63031)
-                    : Colors.transparent,
+                : Colors.transparent,
             width: 3,
           ),
           boxShadow: [
@@ -365,22 +373,6 @@ class _ChoiceTile extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (showCross)
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xFFD63031),
-                    ),
-                    padding: const EdgeInsets.all(6),
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
@@ -389,178 +381,79 @@ class _ChoiceTile extends StatelessWidget {
   }
 }
 
-class _ResultOverlay extends StatelessWidget {
-  const _ResultOverlay({
+class _ExplanationCard extends StatelessWidget {
+  const _ExplanationCard({
     super.key,
-    required this.scenario,
+    required this.description,
     required this.isSuccess,
-    required this.isLastScenario,
-    required this.onPrimary,
-    required this.onClose,
+    this.onRetry,
   });
 
-  final _BehaviorScenario scenario;
+  final _BehaviorDescription description;
   final bool isSuccess;
-  final bool isLastScenario;
-  final VoidCallback onPrimary;
-  final VoidCallback onClose;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final description = isSuccess ? scenario.correctDescription : scenario.wrongDescription;
-    final asset = isSuccess ? scenario.correctAsset : scenario.wrongAsset;
-    final indicatorColor = isSuccess ? const Color(0xFF00B894) : const Color(0xFFD63031);
-    final indicatorIcon = isSuccess ? Icons.check : Icons.close;
-    final primaryLabel = isSuccess
-        ? (isLastScenario ? 'إنهاء' : 'متابعة')
-        : 'متابعة';
+    final Color accent = isSuccess ? const Color(0xFF00B894) : const Color(0xFFD63031);
 
-    return Material(
-      color: Colors.black.withOpacity(0.75),
-      child: SafeArea(
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Column(
-              children: [
-                Align(
-                  alignment: AlignmentDirectional.topEnd,
-                  child: IconButton(
-                    onPressed: onClose,
-                    icon: const Icon(Icons.close, color: Colors.white),
-                    tooltip: 'إغلاق',
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(32),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.20),
-                        blurRadius: 22,
-                        offset: const Offset(0, 12),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AspectRatio(
-                        aspectRatio: 1,
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(28),
-                                child: Container(
-                                  color: const Color(0xFFEFF6F4),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Image.asset(
-                                      asset,
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 16,
-                              left: 16,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: indicatorColor,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: indicatorColor.withOpacity(0.35),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 6),
-                                    ),
-                                  ],
-                                ),
-                                padding: const EdgeInsets.all(10),
-                                child: Icon(
-                                  indicatorIcon,
-                                  color: Colors.white,
-                                  size: 26,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        description.title,
-                        style: textTheme.headlineSmall?.copyWith(
-                          color: indicatorColor,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        description.subtitle,
-                        textAlign: TextAlign.center,
-                        style: textTheme.titleMedium?.copyWith(
-                          color: const Color(0xFF3B3B3B),
-                          fontWeight: FontWeight.w600,
-                          height: 1.4,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: indicatorColor,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(22),
-                            ),
-                            textStyle: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 20,
-                            ),
-                          ),
-                          onPressed: onPrimary,
-                          child: Text(primaryLabel),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: indicatorColor.withOpacity(0.6)),
-                            foregroundColor: indicatorColor,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            textStyle: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          onPressed: onClose,
-                          child: const Text('إغلاق'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-              ],
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: accent.withOpacity(0.35), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0D5F56).withOpacity(0.12),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            description.title,
+            style: textTheme.titleMedium?.copyWith(
+              color: accent,
+              fontWeight: FontWeight.w800,
             ),
           ),
-        ),
+          const SizedBox(height: 12),
+          Text(
+            description.subtitle,
+            style: textTheme.titleMedium?.copyWith(
+              color: const Color(0xFF184F4A),
+              fontWeight: FontWeight.w600,
+              height: 1.4,
+            ),
+          ),
+          if (!isSuccess && onRetry != null) ...[
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: accent,
+                  side: BorderSide(color: accent.withOpacity(0.5)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  textStyle: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                onPressed: onRetry,
+                child: const Text('حاول مرة أخرى'),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
