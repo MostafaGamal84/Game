@@ -43,7 +43,7 @@ class LevelTwoIntroScreen extends StatelessWidget {
                     Align(
                       alignment: Alignment.center,
                       child: Text(
-                        'لعبة\nابحث عن التشوة',
+                        'لعبة\nابحث عن التشوه',
                         textAlign: TextAlign.center,
                         style: baseTitleStyle.copyWith(
                           color: Colors.white,
@@ -54,20 +54,35 @@ class LevelTwoIntroScreen extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00695C),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+
+                    // ✅ زرار موحد في الحجم والتصميم
+                    Center(
+                      child: SizedBox(
+                        width: 220,
+                        height: 60,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1E6F5C),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                            ),
+                            elevation: 6,
+                            shadowColor: const Color(0xFF1E6F5C).withOpacity(0.35),
+                            textStyle: textTheme.titleMedium?.copyWith(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
                           ),
-                          textStyle: textTheme.titleMedium?.copyWith(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const LevelTwoGameScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text('ابدأ اللعب'),
                         ),
                         onPressed: () {
                           SoundEffects.playClaim();
@@ -80,6 +95,7 @@ class LevelTwoIntroScreen extends StatelessWidget {
                         child: const Text('ابدأ اللعب'),
                       ),
                     ),
+
                     const SizedBox(height: 24),
                   ],
                 ),

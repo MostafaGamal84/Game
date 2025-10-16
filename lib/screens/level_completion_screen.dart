@@ -43,7 +43,7 @@ class LevelCompletionScreen extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF1E6F5C),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(28),
                           ),
@@ -63,7 +63,7 @@ class LevelCompletionScreen extends StatelessWidget {
                         },
                         label: const Padding(
                           padding: EdgeInsets.only(right: 8.0),
-                          child: Text('العودة للشاشة الرئيسية'),
+                          child: Text('انهاء المستوى'),
                         ),
                       ),
                     ),

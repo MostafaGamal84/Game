@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
@@ -34,9 +33,7 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!_audioInitialized) {
-      return;
-    }
+    if (!_audioInitialized) return;
 
     switch (state) {
       case AppLifecycleState.resumed:
@@ -67,40 +64,44 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // خلفية الشاشة
           Image.asset(
             'assets/images/main.png',
             fit: BoxFit.cover,
           ),
+
+          // طبقة شفافة
           Container(
             color: Colors.black.withOpacity(0.25),
           ),
+
+          // زر "ابدأ اللعب"
           SafeArea(
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 60), // 👈 رفعناه فوق شوية
                 child: Directionality(
                   textDirection: TextDirection.rtl,
                   child: SizedBox(
-                    width: 194,
-                    height: 102,
+                    width: 220,
                     child: ElevatedButton.icon(
                       icon: const Icon(
                         Icons.play_arrow_rounded,
-                        size: 36,
+                        size: 30,
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00695C),
+                        backgroundColor: const Color(0xFF1E6F5C),
                         foregroundColor: Colors.white,
-                        elevation: 6,
-                        shadowColor: const Color(0xFF00695C).withOpacity(0.45),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(28),
                         ),
-                        textStyle: textTheme.titleLarge?.copyWith(
-                          fontSize: 24,
+                        textStyle: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
-                          letterSpacing: 0.5,
+                          fontSize: 20,
                           color: Colors.white,
                         ),
                       ),

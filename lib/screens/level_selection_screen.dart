@@ -48,7 +48,9 @@ class LevelSelectionScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 50),
+
+                    // أزرار المستويات
                     for (var index = 0; index < 3; index++)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -66,18 +68,18 @@ class LevelSelectionScreen extends StatelessWidget {
                             );
                           },
                           child: SizedBox(
-                            width: 194,
-                            height: 102,
+                            width: 220, // ✅ نفس عرض زر "ابدأ اللعب"
+                            height: 60, // ✅ نفس الارتفاع
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF00695C),
+                                backgroundColor: const Color(0xFF1E6F5C),
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(26),
+                                  borderRadius: BorderRadius.circular(28),
                                 ),
                                 elevation: 6,
                                 shadowColor:
-                                    const Color(0xFF00695C).withOpacity(0.35),
+                                    const Color(0xFF1E6F5C).withOpacity(0.35),
                                 textStyle: textTheme.titleMedium?.copyWith(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
@@ -106,30 +108,17 @@ class LevelSelectionScreen extends StatelessWidget {
                                   );
                                 }
                               },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    [
-                                      Icons.looks_one_rounded,
-                                      Icons.looks_two_rounded,
-                                      Icons.looks_3_rounded,
-                                    ][index],
-                                    size: 32,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    [
-                                      'المستوى 1',
-                                      'المستوى 2',
-                                      'المستوى 3',
-                                    ][index],
-                                    style: textTheme.titleMedium?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
+                              child: Text(
+                                [
+                                  'المستوى 1',
+                                  'المستوى 2',
+                                  'المستوى 3',
+                                ][index],
+                                style: textTheme.titleMedium?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 22,
+                                ),
                               ),
                             ),
                           ),

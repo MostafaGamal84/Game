@@ -13,81 +13,122 @@ class LevelOnePhotoScreen extends StatefulWidget {
 }
 
 class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
-  static const List<PhotoQuestion> _questions = [
+  /// الأساس: بنحدد المسارات + التصنيف فقط (من غير وصف ثابت)
+  static const List<PhotoQuestion> _base = [
+    // سيّئ
     PhotoQuestion(
-      assetPath: 'assets/images/LevelOne/bad1.jpg',
+      assetPath: 'assets/images/LevelOne/bad1.jpg', // تمديدات التكييفات
       category: PhotoCategory.visualPollution,
-      description: 'تكدس النفايات في الشوارع يسبب روائح كريهة ويشوه منظر المدينة الجميل.',
+      description: '', // سنملأه ديناميكياً
     ),
     PhotoQuestion(
-      assetPath: 'assets/images/LevelOne/bad2.jpg',
+      assetPath: 'assets/images/LevelOne/bad2.jpg', // سيارات تالفة
       category: PhotoCategory.visualPollution,
-      description: 'الكتابة العشوائية على الجدران تقلل من جمالية المكان وتؤثر على سلوك الزوار.',
+      description: '',
     ),
     PhotoQuestion(
-      assetPath: 'assets/images/LevelOne/bad3.jpg',
+      assetPath: 'assets/images/LevelOne/bad3.jpg', // مخلفات البناء
       category: PhotoCategory.visualPollution,
-      description: 'الأسلاك المعلقة بشكل غير منظم قد تكون خطيرة وتظهر الحي بمظهر غير مرتب.',
+      description: '',
     ),
     PhotoQuestion(
-      assetPath: 'assets/images/LevelOne/bad4.jpg',
+      assetPath: 'assets/images/LevelOne/bad4.jpg', // أطباق الأقمار
       category: PhotoCategory.visualPollution,
-      description: 'إلقاء المخلفات بجانب الحاويات يعيق المارة ويؤثر على الصحة العامة.',
+      description: '',
     ),
     PhotoQuestion(
-      assetPath: 'assets/images/LevelOne/bad5.jpg',
+      assetPath: 'assets/images/LevelOne/bad5.jpg', // هناجر مخالفة
       category: PhotoCategory.visualPollution,
-      description: 'إهمال الحدائق العامة وتركها دون رعاية يقلل من نصيبنا من المساحات الخضراء.',
+      description: '',
+    ),
+
+    // جيّد
+    PhotoQuestion(
+      assetPath: 'assets/images/LevelOne/good1.jpg', // نظافة الأماكن العامة والحدائق
+      category: PhotoCategory.civilizedView,
+      description: '',
     ),
     PhotoQuestion(
-      assetPath: 'assets/images/LevelOne/good1.jpg',
+      assetPath: 'assets/images/LevelOne/good2.jpg', // تناسق ألوان الواجهات
       category: PhotoCategory.civilizedView,
-      description: 'تنسيق النباتات والزهور بألوان مختلفة يمنح المكان حياةً وراحةً للنظر.',
+      description: '',
     ),
     PhotoQuestion(
-      assetPath: 'assets/images/LevelOne/good2.jpg',
+      assetPath: 'assets/images/LevelOne/good3.jpg', // أطفال ينظفون الحديقة
       category: PhotoCategory.civilizedView,
-      description: 'تنظيم المقاعد في الحدائق يساعد الجميع على الاستمتاع بالهواء الطلق براحة.',
+      description: '',
     ),
     PhotoQuestion(
-      assetPath: 'assets/images/LevelOne/good3.jpg',
+      assetPath: 'assets/images/LevelOne/good4.jpg', // إزالة النفايات في المكان المخصص
       category: PhotoCategory.civilizedView,
-      description: 'وجود مسارات للمشاة والدراجات يجعل التنقل آمناً ويشجع على ممارسة الرياضة.',
+      description: '',
     ),
     PhotoQuestion(
-      assetPath: 'assets/images/LevelOne/good4.jpg',
+      assetPath: 'assets/images/LevelOne/good5.jpg', // منظَر حضاري مرتب/حديقة مُعتنى بها
       category: PhotoCategory.civilizedView,
-      description: 'المباني النظيفة والمصممة بعناية تعكس اهتمام السكان بمدينتهم.',
-    ),
-    PhotoQuestion(
-      assetPath: 'assets/images/LevelOne/good5.jpg',
-      category: PhotoCategory.civilizedView,
-      description: 'توفير مساحات للعب الأطفال يجعل الحي أكثر حيوية وسعادة للعائلات.',
+      description: '',
     ),
   ];
+
+  /// أوصاف مناسبة لكل صورة حسب المسار الذي ذكرتَه
+  static const Map<String, String> _descriptionsByAsset = {
+    // سيّئ (تشوّه بصري)
+    'assets/images/LevelOne/bad1.jpg':
+        'تمديدات أجهزة التكييف الظاهرة والعشوائية تشوّه واجهات المباني وتعرّض السكان للخطر عند التسرب أو السقوط.',
+    'assets/images/LevelOne/bad2.jpg':
+        'السيارات التالفة والمتروكة في الشوارع تشغل الأرصفة وتعيق الحركة وتُعد منظراً غير حضاري.',
+    'assets/images/LevelOne/bad3.jpg':
+        'مخلفات البناء والركام الملقى في غير أماكنه يعرّض المارة للأذى ويشوّه المشهد العام.',
+    'assets/images/LevelOne/bad4.jpg':
+        'أطباق الأقمار الصناعية المركّبة بشكل عشوائي على الواجهات والأسطح تسبب فوضى بصرية وقد تؤثر على السلامة.',
+    'assets/images/LevelOne/bad5.jpg':
+        'هناجر أو منشآت مخالفة دون تراخيص تشوّه النسيج العمراني وتخالف الأنظمة البلدية.',
+
+    // جيّد (منظر حضاري)
+    'assets/images/LevelOne/good1.jpg':
+        'نظافة الحدائق والأماكن العامة تمنح الجميع مساحة آمنة وجميلة للاسترخاء واللعب.',
+    'assets/images/LevelOne/good2.jpg':
+        'تناسق ألوان واجهات المباني يخلق منظراً حضارياً متّحداً يريح العين ويعكس الذوق العام.',
+    'assets/images/LevelOne/good3.jpg':
+        'مشاركة الأطفال في تنظيف الحديقة سلوك إيجابي يغرس قيمة المحافظة على البيئة منذ الصغر.',
+    'assets/images/LevelOne/good4.jpg':
+        'التخلّص من النفايات في الحاويات المخصّصة يحافظ على نظافة الشوارع ويمنع الروائح والحشرات.',
+    'assets/images/LevelOne/good5.jpg':
+        'اعتناء المجتمع بالمساحات الخضراء وتنظيمها يرفع جودة الحياة ويزيد جمال الحي.',
+  };
+
+  /// القائمة التي سنعرضها بعد إضافة الأوصاف وخلط الترتيب
+  late final List<PhotoQuestion> _questions;
 
   int _currentIndex = 0;
   bool? _isAnswerCorrect;
   bool _showFeedback = false;
 
-  PhotoQuestion get _currentQuestion => _questions[_currentIndex];
+  @override
+  void initState() {
+    super.initState();
+    // جهّز القائمة بالأوصاف الصحيحة لكل عنصر
+    final filled = _base.map((q) {
+      final desc = _descriptionsByAsset[q.assetPath] ?? '';
+      return PhotoQuestion(
+        assetPath: q.assetPath,
+        category: q.category,
+        description: desc,
+      );
+    }).toList();
 
-  String get _currentImage => _currentQuestion.assetPath;
-
-  bool get _isLastQuestion => _currentIndex == _questions.length - 1;
-
-  void _showNextImage() {
-    setState(() {
-      _currentIndex = (_currentIndex + 1) % _questions.length;
-      _isAnswerCorrect = null;
-      _showFeedback = false;
-    });
+    // اعمل Shuffle عشوائي كل مرة تفتح فيها الشاشة
+    final rng = Random(DateTime.now().millisecondsSinceEpoch);
+    filled.shuffle(rng);
+    _questions = filled;
   }
 
+  PhotoQuestion get _currentQuestion => _questions[_currentIndex];
+  String get _currentImage => _currentQuestion.assetPath;
+  bool get _isLastQuestion => _currentIndex == _questions.length - 1;
+
   void _onAnswerSelected(PhotoCategory category) {
-    if (_showFeedback) {
-      return;
-    }
+    if (_showFeedback) return;
 
     SoundEffects.playClaim();
     final isCorrect = category == _currentQuestion.category;
@@ -100,13 +141,10 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
   void _handleNextQuestion() {
     if (_isLastQuestion) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => const LevelCompletionScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const LevelCompletionScreen()),
       );
       return;
     }
-
     setState(() {
       _currentIndex += 1;
       _isAnswerCorrect = null;
@@ -122,10 +160,7 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            'assets/images/levelBackground.png',
-            fit: BoxFit.cover,
-          ),
+          Image.asset('assets/images/levelBackground.png', fit: BoxFit.cover),
           SafeArea(
             child: Directionality(
               textDirection: TextDirection.rtl,
@@ -134,19 +169,6 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // _IconCircleButton(
-                        //   icon: Icons.arrow_back_ios_new_rounded,
-                        //   onPressed: () => Navigator.of(context).pop(),
-                        // ),
-                        // _IconCircleButton(
-                        //   icon: Icons.refresh_rounded,
-                        //   onPressed: _showNextImage,
-                        // ),
-                      ],
-                    ),
                     const SizedBox(height: 36),
                     Text(
                       'اختر نوع الصورة',
@@ -192,9 +214,7 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
                             textColor: const Color(0xFFF7E7DC),
                             onPressed: _showFeedback
                                 ? null
-                                : () => _onAnswerSelected(
-                                      PhotoCategory.visualPollution,
-                                    ),
+                                : () => _onAnswerSelected(PhotoCategory.visualPollution),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -205,9 +225,7 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
                             textColor: const Color(0xFFEAF5EE),
                             onPressed: _showFeedback
                                 ? null
-                                : () => _onAnswerSelected(
-                                      PhotoCategory.civilizedView,
-                                    ),
+                                : () => _onAnswerSelected(PhotoCategory.civilizedView),
                           ),
                         ),
                       ],
@@ -217,6 +235,8 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
               ),
             ),
           ),
+
+          // طبقة التغذية الراجعة
           if (_showFeedback && _isAnswerCorrect != null)
             _AnswerFeedbackOverlay(
               question: _currentQuestion,
@@ -248,10 +268,7 @@ class PhotoQuestion {
   final String description;
 }
 
-enum PhotoCategory {
-  visualPollution,
-  civilizedView,
-}
+enum PhotoCategory { visualPollution, civilizedView }
 
 class _AnswerFeedbackOverlay extends StatelessWidget {
   const _AnswerFeedbackOverlay({
@@ -272,12 +289,13 @@ class _AnswerFeedbackOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final Color accentColor = isCorrect ? const Color(0xFF1E6F5C) : const Color(0xFFA8443D);
-    final IconData icon = isCorrect ? Icons.check_circle_rounded : Icons.close_rounded;
+    final Color accentColor =
+        isCorrect ? const Color(0xFF1E6F5C) : const Color(0xFFA8443D);
+    final IconData icon =
+        isCorrect ? Icons.check_circle_rounded : Icons.close_rounded;
     final String title = isCorrect ? 'إجابة صحيحة' : 'إجابة خاطئة';
-    final String buttonLabel = isCorrect
-        ? (isLastQuestion ? 'إنهاء' : 'التالي')
-        : 'حاول مجدداً';
+    final String buttonLabel =
+        isCorrect ? (isLastQuestion ? 'إنهاء' : 'التالي') : 'حاول مجدداً';
 
     return Positioned.fill(
       child: Container(
@@ -308,11 +326,7 @@ class _AnswerFeedbackOverlay extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(12),
-                    child: Icon(
-                      icon,
-                      color: accentColor,
-                      size: 48,
-                    ),
+                    child: Icon(icon, color: accentColor, size: 48),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -336,7 +350,7 @@ class _AnswerFeedbackOverlay extends StatelessWidget {
                   Text(
                     isCorrect
                         ? question.description
-                        : 'فكر مرة أخرى ولاحظ تفاصيل الصورة لتحديد الاختيار الصحيح.',
+                        : 'فكّر مرة أخرى ولاحظ تفاصيل الصورة لتحديد الاختيار الصحيح.',
                     textAlign: TextAlign.center,
                     style: textTheme.titleMedium?.copyWith(
                       fontSize: 20,
@@ -380,36 +394,6 @@ class _AnswerFeedbackOverlay extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _IconCircleButton extends StatelessWidget {
-  const _IconCircleButton({
-    required this.icon,
-    required this.onPressed,
-  });
-
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withOpacity(0.18),
-      shape: const CircleBorder(),
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: 24,
           ),
         ),
       ),
