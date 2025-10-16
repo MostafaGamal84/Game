@@ -238,7 +238,12 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
             ),
 
           // HUD أعلى الشاشة
-          if (!_playFinish) const _TopHud(),
+          if (!_playFinish)
+            _TopHud(
+              foundCount: _foundCount,
+              totalCount: _totalCount,
+              counterPulse: _counterPulse,
+            ),
 
           // كارت الشرح
           if (_activeSpot != null)
@@ -286,17 +291,20 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
 }
 
 /// HUD مثبت أعلى الشاشة
-class _TopHud extends StatefulWidget {
-  const _TopHud({super.key});
+class _TopHud extends StatelessWidget {
+  const _TopHud({
+    super.key,
+    required this.foundCount,
+    required this.totalCount,
+    required this.counterPulse,
+  });
 
-  @override
-  State<_TopHud> createState() => _TopHudState();
-}
+  final int foundCount;
+  final int totalCount;
+  final double counterPulse;
 
-class _TopHudState extends State<_TopHud> {
   @override
   Widget build(BuildContext context) {
-    final state = context.findAncestorStateOfType<_LevelTwoGameScreenState>()!;
     final textTheme = Theme.of(context).textTheme;
 
     return Positioned(
@@ -358,7 +366,7 @@ class _TopHudState extends State<_TopHud> {
                   const SizedBox(height: 6),
                   AnimatedScale(
                     duration: const Duration(milliseconds: 180),
-                    scale: context.findAncestorStateOfType<_LevelTwoGameScreenState>()!._counterPulse,
+                    scale: counterPulse,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                       decoration: BoxDecoration(
@@ -373,7 +381,7 @@ class _TopHudState extends State<_TopHud> {
                         ],
                       ),
                       child: Text(
-                        '${state._foundCount} / ${state._totalCount}',
+                        '$foundCount / $totalCount',
                         style: textTheme.titleLarge?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
