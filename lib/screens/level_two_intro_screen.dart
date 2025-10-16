@@ -76,6 +76,7 @@ class LevelTwoIntroScreen extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
+                            SoundEffects.playClaim();
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) => const LevelTwoGameScreen(),
@@ -84,15 +85,6 @@ class LevelTwoIntroScreen extends StatelessWidget {
                           },
                           child: const Text('ابدأ اللعب'),
                         ),
-                        onPressed: () {
-                          SoundEffects.playClaim();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const LevelTwoGameScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text('ابدأ اللعب'),
                       ),
                     ),
 

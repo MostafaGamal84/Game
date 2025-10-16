@@ -463,7 +463,7 @@ class _MessageCard extends StatelessWidget {
                 ),
                 onPressed: () {
                   SoundEffects.playClaim();
-                  onRetry();
+                  onRetry!();
                 },
                 child: const Text('حاول مرة أخرى'),
               ),

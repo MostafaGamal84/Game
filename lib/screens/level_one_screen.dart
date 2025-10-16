@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:game/screens/level_one_photo_screen.dart';
+import 'package:said_alakhtha/screens/level_one_photo_screen.dart';
 
 import '../utils/sound_effects.dart';
 

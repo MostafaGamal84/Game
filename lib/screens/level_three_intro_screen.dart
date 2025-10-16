@@ -76,6 +76,7 @@ class LevelThreeIntroScreen extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
+                            SoundEffects.playClaim();
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) => const LevelThreeGameScreen(),
@@ -84,15 +85,6 @@ class LevelThreeIntroScreen extends StatelessWidget {
                           },
                           child: const Text('ابدأ اللعب'),
                         ),
-                        onPressed: () {
-                          SoundEffects.playClaim();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const LevelThreeGameScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text('ابدأ اللعب'),
                       ),
                     ),
 
