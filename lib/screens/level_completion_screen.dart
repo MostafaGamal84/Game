@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../utils/sound_effects.dart';
 import 'start_screen.dart';
 
 class LevelCompletionScreen extends StatelessWidget {
@@ -53,7 +52,6 @@ class LevelCompletionScreen extends StatelessWidget {
                               ),
                         ),
                         onPressed: () {
-                          SoundEffects.playClaim();
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
                               builder: (_) => const StartScreen(),
