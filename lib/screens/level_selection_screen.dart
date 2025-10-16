@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../utils/sound_effects.dart';
 import 'level_one_screen.dart';
 import 'level_two_intro_screen.dart';
 import 'level_three_intro_screen.dart';
@@ -84,6 +85,7 @@ class LevelSelectionScreen extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () {
+                                SoundEffects.playClaim();
                                 if (index == 0) {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(

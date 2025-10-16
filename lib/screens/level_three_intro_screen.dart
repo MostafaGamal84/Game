@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../utils/sound_effects.dart';
 import 'level_three_game_screen.dart';
 
 class LevelThreeIntroScreen extends StatelessWidget {
@@ -30,7 +31,10 @@ class LevelThreeIntroScreen extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () {
+                          SoundEffects.playClaim();
+                          Navigator.of(context).pop();
+                        },
                         icon: const Icon(Icons.arrow_back_ios_new_rounded),
                         color: Colors.white,
                       ),
@@ -66,6 +70,7 @@ class LevelThreeIntroScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
+                          SoundEffects.playClaim();
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => const LevelThreeGameScreen(),

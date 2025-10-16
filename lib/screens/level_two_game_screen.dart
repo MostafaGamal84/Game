@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 
+import '../utils/sound_effects.dart';
 import 'level_completion_screen.dart';
 
 class LevelTwoGameScreen extends StatefulWidget {
@@ -100,10 +100,6 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
   // نبضة العداد
   double _counterPulse = 1.0;
 
-  // الأصوات
-  late final AudioPlayer _sfxClaim;
-  late final AudioPlayer _sfxCorrect;
-
   @override
   void initState() {
     super.initState();
@@ -115,10 +111,7 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
         if (s == AnimationStatus.completed && mounted) {
           // بعد اللمعات: فعّل طبقة الصورة النهائية وابدأ الـ glare العام + صوت النهاية
           setState(() => _showFinalLayer = true);
-          try {
-            await _sfxCorrect.stop();
-            await _sfxCorrect.play(AssetSource('sounds/correct.mp3'));
-          } catch (_) {}
+          SoundEffects.playCorrect();
           _finalCtrl.forward(from: 0);
         }
       });
@@ -130,17 +123,12 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
     _finalFade = CurvedAnimation(parent: _finalCtrl, curve: Curves.easeInOut);
     _fullGlare = CurvedAnimation(parent: _finalCtrl, curve: Curves.easeOutCubic);
 
-    // إعداد الصوتيات
-    _sfxClaim = AudioPlayer()..setReleaseMode(ReleaseMode.stop);
-    _sfxCorrect = AudioPlayer()..setReleaseMode(ReleaseMode.stop);
   }
 
   @override
   void dispose() {
     _flashCtrl.dispose();
     _finalCtrl.dispose();
-    _sfxClaim.dispose();
-    _sfxCorrect.dispose();
     super.dispose();
   }
 
@@ -156,6 +144,7 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
   }
 
   Future<void> _handleSpotTap(_ViolationSpot spot) async {
+    SoundEffects.playClaim();
     final alreadyFound = _found.contains(spot.id);
     setState(() {
       _found.add(spot.id);
@@ -164,15 +153,11 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
     });
     if (!alreadyFound) {
       _pulseCounter();
-      // صوت اكتشاف العنصر
-      try {
-        await _sfxClaim.stop();
-        await _sfxClaim.play(AssetSource('sounds/claim.mp3'));
-      } catch (_) {}
     }
   }
 
   void _handleCloseInfo() {
+    SoundEffects.playClaim();
     setState(() => _activeSpot = null);
 
     if (_allFound && !_playFinish) {
@@ -186,6 +171,7 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
   }
 
   void _goToCompletion() {
+    SoundEffects.playClaim();
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const LevelCompletionScreen()),
     );
@@ -331,7 +317,10 @@ class _TopHudState extends State<_TopHud> {
                   shape: const CircleBorder(),
                   child: InkWell(
                     customBorder: const CircleBorder(),
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: () {
+                      SoundEffects.playClaim();
+                      Navigator.of(context).pop();
+                    },
                     child: const Padding(
                       padding: EdgeInsets.all(10),
                       child: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
@@ -346,7 +335,9 @@ class _TopHudState extends State<_TopHud> {
                   shape: const CircleBorder(),
                   child: InkWell(
                     customBorder: const CircleBorder(),
-                    onTap: () {},
+                    onTap: () {
+                      SoundEffects.playClaim();
+                    },
                     child: const Padding(
                       padding: EdgeInsets.all(10),
                       child: Icon(Icons.person, color: Colors.white),

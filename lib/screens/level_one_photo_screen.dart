@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import '../utils/sound_effects.dart';
 import 'level_completion_screen.dart';
 
 class LevelOnePhotoScreen extends StatefulWidget {
@@ -86,6 +89,7 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
       return;
     }
 
+    SoundEffects.playClaim();
     final isCorrect = category == _currentQuestion.category;
     setState(() {
       _isAnswerCorrect = isCorrect;
@@ -356,7 +360,20 @@ class _AnswerFeedbackOverlay extends StatelessWidget {
                           fontSize: 20,
                         ),
                       ),
-                      onPressed: isCorrect ? onNext : onTryAgain,
+                      onPressed: () {
+                        SoundEffects.playClaim();
+                        if (isCorrect) {
+                          if (isLastQuestion) {
+                            Future<void>.delayed(
+                              const Duration(milliseconds: 150),
+                              SoundEffects.playCorrect,
+                            );
+                          }
+                          onNext();
+                        } else {
+                          onTryAgain();
+                        }
+                      },
                       child: Text(buttonLabel),
                     ),
                   ),
@@ -436,7 +453,12 @@ class _ChoiceButton extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(18),
-            onTap: onPressed,
+            onTap: isEnabled
+                ? () {
+                    SoundEffects.playClaim();
+                    onPressed!();
+                  }
+                : null,
             child: Center(
               child: Text(
                 label,
