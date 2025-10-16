@@ -3,6 +3,7 @@ import 'dart:math'; // 👈 لعمل عشوائية
 
 import 'package:flutter/material.dart';
 
+import '../utils/sound_effects.dart';
 import 'level_completion_screen.dart';
 
 enum _ChoiceState { initial, correct, wrong }
@@ -115,6 +116,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
   void _handleSelect(_BehaviorOptionType type) {
     if (_choiceState != _ChoiceState.initial) return;
 
+    SoundEffects.playClaim();
     setState(() {
       _choiceState = (type == _BehaviorOptionType.correct)
           ? _ChoiceState.correct
@@ -128,6 +130,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
   }
 
   void _handleRetry() {
+    SoundEffects.playClaim();
     setState(() {
       _choiceState = _ChoiceState.initial;
       // نقدر نخلي ترتيب الجهة ثابت وقت الإعادة لنفس المشهد (ما نغيّروش)
@@ -142,6 +145,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
     if (!mounted) return;
 
     if (_isLastScenario) {
+      SoundEffects.playCorrect();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const LevelCompletionScreen()),
       );
@@ -188,7 +192,10 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          onPressed: () => Navigator.of(context).pop(),
+                          onPressed: () {
+                            SoundEffects.playClaim();
+                            Navigator.of(context).pop();
+                          },
                           icon: const Icon(Icons.arrow_back_ios_new_rounded),
                           color: Colors.white,
                         ),
@@ -454,7 +461,10 @@ class _MessageCard extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                onPressed: onRetry,
+                onPressed: () {
+                  SoundEffects.playClaim();
+                  onRetry();
+                },
                 child: const Text('حاول مرة أخرى'),
               ),
             ),

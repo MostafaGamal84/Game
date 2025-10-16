@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/sound_effects.dart';
 import 'level_selection_screen.dart';
 
 class StartScreen extends StatefulWidget {
@@ -25,6 +26,7 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
 
   Future<void> _playBackgroundAudio() async {
     await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await _audioPlayer.setVolume(1.0);
     await _audioPlayer.play(AssetSource('sounds/intro.mp3'));
     _audioInitialized = true;
   }
@@ -104,11 +106,18 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
                         ),
                       ),
                       onPressed: () {
+                        SoundEffects.playClaim();
+                        _audioPlayer.setVolume(0.35);
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const LevelSelectionScreen(),
                           ),
-                        );
+                        ).then((_) {
+                          if (!mounted) {
+                            return;
+                          }
+                          _audioPlayer.setVolume(1.0);
+                        });
                       },
                       label: const Padding(
                         padding: EdgeInsets.only(right: 8.0),
