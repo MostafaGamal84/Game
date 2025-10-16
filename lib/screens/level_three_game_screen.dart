@@ -337,10 +337,10 @@ class _ChoiceTile extends StatelessWidget {
       onTap: isInteractive ? onTap : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
+        constraints: const BoxConstraints(minHeight: 220),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: highlightCorrect
                 ? const Color(0xFF00B894)
@@ -361,9 +361,8 @@ class _ChoiceTile extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+                padding: const EdgeInsets.all(4.0),
+                child: ClipOval(
                   child: Image.asset(
                     assetPath,
                     fit: BoxFit.cover,
