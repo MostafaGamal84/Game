@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'dart:math'; // 👈 لعمل عشوائية
 
 import 'package:flutter/material.dart';
 
 import 'level_completion_screen.dart';
 
 enum _ChoiceState { initial, correct, wrong }
-
 enum _BehaviorOptionType { correct, wrong }
 
 class _BehaviorScenario {
@@ -79,16 +79,24 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
       correctAsset: 'assets/images/LevelThree/correct7.png',
       wrongAsset: 'assets/images/LevelThree/wrong7.png',
       title: 'المشهد 7: تجاهل المخاطر أو التصرفات الخاطئة',
-      correctMessage:
-          'الإبلاغ عن السلوكيات الخطرة يحمي الجميع. اتصل على 940 عند ملاحظتها.',
-      wrongMessage:
-          'تجاهل المخاطر يجعلها تتكرر. أخبر الجهات المختصة عبر 940.',
+      correctMessage: 'الإبلاغ عن السلوكيات الخطرة يحمي الجميع. اتصل على 940 عند ملاحظتها.',
+      wrongMessage: 'تجاهل المخاطر يجعلها تتكرر. أخبر الجهات المختصة عبر 940.',
     ),
   ];
 
   int _currentIndex = 0;
   _ChoiceState _choiceState = _ChoiceState.initial;
   Timer? _advanceTimer;
+
+  // 👇 عشوائية مكان الإجابة الصحيحة (يمين/شمال) لكل مشهد
+  final Random _rng = Random();
+  bool _correctOnLeft = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _correctOnLeft = _rng.nextBool(); // أول مشهد
+  }
 
   String get _currentBackground {
     switch (_choiceState) {
@@ -102,17 +110,15 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
   }
 
   _BehaviorScenario get _currentScenario => _scenarios[_currentIndex];
-
   bool get _isLastScenario => _currentIndex == _scenarios.length - 1;
 
   void _handleSelect(_BehaviorOptionType type) {
-    if (_choiceState != _ChoiceState.initial) {
-      return;
-    }
+    if (_choiceState != _ChoiceState.initial) return;
 
     setState(() {
-      _choiceState =
-          type == _BehaviorOptionType.correct ? _ChoiceState.correct : _ChoiceState.wrong;
+      _choiceState = (type == _BehaviorOptionType.correct)
+          ? _ChoiceState.correct
+          : _ChoiceState.wrong;
     });
 
     if (type == _BehaviorOptionType.correct) {
@@ -124,16 +130,16 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
   void _handleRetry() {
     setState(() {
       _choiceState = _ChoiceState.initial;
+      // نقدر نخلي ترتيب الجهة ثابت وقت الإعادة لنفس المشهد (ما نغيّروش)
+      // لو عايز تغييره في كل محاولة، فعّل السطر الجاي:
+      // _correctOnLeft = _rng.nextBool();
     });
   }
 
   void _handleNext() {
     _advanceTimer?.cancel();
     _advanceTimer = null;
-
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
     if (_isLastScenario) {
       Navigator.of(context).pushReplacement(
@@ -143,6 +149,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
       setState(() {
         _currentIndex++;
         _choiceState = _ChoiceState.initial;
+        _correctOnLeft = _rng.nextBool(); // 👈 عشوائية للمشهد الجديد
       });
     }
   }
@@ -205,7 +212,6 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      
                     ],
                     const Spacer(),
                     _ChoicesBoard(
@@ -213,6 +219,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                       choiceState: _choiceState,
                       onSelect: _handleSelect,
                       onRetry: _handleRetry,
+                      correctOnLeft: _correctOnLeft, // 👈 نمرّر ترتيب الجهة
                     ),
                     const SizedBox(height: 32),
                   ],
@@ -233,16 +240,58 @@ class _ChoicesBoard extends StatelessWidget {
     required this.choiceState,
     required this.onSelect,
     required this.onRetry,
+    required this.correctOnLeft,
   });
 
   final _BehaviorScenario scenario;
   final _ChoiceState choiceState;
   final ValueChanged<_BehaviorOptionType> onSelect;
   final VoidCallback onRetry;
+  final bool correctOnLeft; // 👈 هل الإجابة الصحيحة على اليسار؟
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+
+    // ويدجت الصورة الصحيحة
+    final correctTile = Expanded(
+      child: _ChoiceTile(
+        assetPath: scenario.correctAsset,
+        type: _BehaviorOptionType.correct,
+        choiceState: choiceState,
+        isInteractive: choiceState == _ChoiceState.initial,
+        onTap: () => onSelect(_BehaviorOptionType.correct),
+      ),
+    );
+
+    // ويدجت الصورة الخطأ أو الرسالة بدلها
+    final wrongSide = Expanded(
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        child: choiceState == _ChoiceState.initial
+            ? _ChoiceTile(
+                key: const ValueKey('wrong_choice'),
+                assetPath: scenario.wrongAsset,
+                type: _BehaviorOptionType.wrong,
+                choiceState: choiceState,
+                isInteractive: choiceState == _ChoiceState.initial,
+                onTap: () => onSelect(_BehaviorOptionType.wrong),
+              )
+            : _MessageCard(
+                key: ValueKey<_ChoiceState>(choiceState),
+                message: choiceState == _ChoiceState.correct
+                    ? scenario.correctMessage
+                    : scenario.wrongMessage,
+                isSuccess: choiceState == _ChoiceState.correct,
+                onRetry: choiceState == _ChoiceState.wrong ? onRetry : null,
+              ),
+      ),
+    );
+
+    // رصّ الأعمدة حسب الجهة العشوائية
+    final children = correctOnLeft
+        ? <Widget>[correctTile, const SizedBox(width: 16), wrongSide]
+        : <Widget>[wrongSide, const SizedBox(width: 16), correctTile];
 
     return Container(
       width: double.infinity,
@@ -269,42 +318,7 @@ class _ChoicesBoard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: _ChoiceTile(
-                  assetPath: scenario.correctAsset,
-                  type: _BehaviorOptionType.correct,
-                  choiceState: choiceState,
-                  isInteractive: choiceState == _ChoiceState.initial,
-                  onTap: () => onSelect(_BehaviorOptionType.correct),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  child: choiceState == _ChoiceState.initial
-                      ? _ChoiceTile(
-                          key: const ValueKey('wrong_choice'),
-                          assetPath: scenario.wrongAsset,
-                          type: _BehaviorOptionType.wrong,
-                          choiceState: choiceState,
-                          isInteractive: choiceState == _ChoiceState.initial,
-                          onTap: () => onSelect(_BehaviorOptionType.wrong),
-                        )
-                      : _MessageCard(
-                          key: ValueKey<_ChoiceState>(choiceState),
-                          message: choiceState == _ChoiceState.correct
-                              ? scenario.correctMessage
-                              : scenario.wrongMessage,
-                          isSuccess: choiceState == _ChoiceState.correct,
-                          onRetry: choiceState == _ChoiceState.wrong ? onRetry : null,
-                        ),
-                ),
-              ),
-            ],
-          ),
+          Row(children: children),
         ],
       ),
     );
@@ -337,56 +351,43 @@ class _ChoiceTile extends StatelessWidget {
       onTap: isInteractive ? onTap : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(12),
-        constraints: const BoxConstraints(minHeight: 220),
+        height: 240,
+        width: double.infinity,
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: highlightCorrect
-                ? const Color(0xFF00B894)
-                : Colors.transparent,
-            width: 3,
-          ),
+          // بدون زوايا دائرية
+          borderRadius: BorderRadius.zero,
+          // بدون إطار بعد الاختيار (حسب طلبك سابقاً)
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0D5F56).withOpacity(0.18),
-              blurRadius: 16,
-              offset: const Offset(0, 10),
+              color: const Color(0xFF0D5F56).withOpacity(0.12),
+              blurRadius: 14,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: ClipOval(
-                  child: Image.asset(
-                    assetPath,
-                    fit: BoxFit.cover,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            FittedBox(
+              fit: BoxFit.contain,
+              alignment: Alignment.center,
+              child: Image.asset(assetPath),
+            ),
+            if (showCheck)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFF00B894),
                   ),
+                  padding: const EdgeInsets.all(6),
+                  child: const Icon(Icons.check, color: Colors.white, size: 20),
                 ),
               ),
-              if (showCheck)
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xFF00B894),
-                    ),
-                    padding: const EdgeInsets.all(6),
-                    child: const Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          ],
         ),
       ),
     );

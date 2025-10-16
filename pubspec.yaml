@@ -1,4 +1,4 @@
-name: game
+name: said_alakhtha
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -97,6 +97,7 @@ flutter:
     - assets/images/LevelThree/wrong6.png
     - assets/images/LevelThree/correct7.png
     - assets/images/LevelThree/wrong7.png
+    - assets/images/LevelThree/sad.jpg
     - assets/images/finish.png
   # To add assets to your application, add an assets section, like this:
   # assets:

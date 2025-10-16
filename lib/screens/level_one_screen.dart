@@ -94,18 +94,20 @@ class LevelOneScreen extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 28),
+
+                    // ✅ زرار "ابدأ اللعب" بنفس حجم باقي الأزرار
                     SizedBox(
-                      width: 194,
-                      height: 62,
+                      width: 220,
+                      height: 60,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00695C),
+                          backgroundColor: const Color(0xFF1E6F5C),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(28),
                           ),
                           elevation: 6,
-                          shadowColor: const Color(0xFF00695C).withOpacity(0.35),
+                          shadowColor: const Color(0xFF1E6F5C).withOpacity(0.35),
                           textStyle: textTheme.titleMedium?.copyWith(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
@@ -119,7 +121,7 @@ class LevelOneScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        child: const Text('ابدا اللعب'),
+                        child: const Text('ابدأ اللعب'),
                       ),
                     ),
                   ],
