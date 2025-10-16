@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/sound_effects.dart';
 import 'level_selection_screen.dart';
 
 class StartScreen extends StatefulWidget {
@@ -106,7 +105,6 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
                         ),
                       ),
                       onPressed: () {
-                        SoundEffects.playClaim();
                         _audioPlayer.setVolume(0.35);
                         Navigator.of(context).push(
                           MaterialPageRoute(

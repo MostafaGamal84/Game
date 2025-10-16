@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../utils/sound_effects.dart';
 import 'level_two_game_screen.dart';
 
 class LevelTwoIntroScreen extends StatelessWidget {
@@ -32,7 +31,6 @@ class LevelTwoIntroScreen extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: IconButton(
                         onPressed: () {
-                          SoundEffects.playClaim();
                           Navigator.of(context).pop();
                         },
                         icon: const Icon(Icons.arrow_back_ios_new_rounded),
@@ -76,7 +74,6 @@ class LevelTwoIntroScreen extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            SoundEffects.playClaim();
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) => const LevelTwoGameScreen(),

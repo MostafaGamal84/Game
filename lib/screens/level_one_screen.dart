@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:said_alakhtha/screens/level_one_photo_screen.dart';
 
-import '../utils/sound_effects.dart';
 
 class LevelOneScreen extends StatelessWidget {
   const LevelOneScreen({super.key});
@@ -117,7 +116,6 @@ class LevelOneScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          SoundEffects.playClaim();
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const LevelOnePhotoScreen(),
