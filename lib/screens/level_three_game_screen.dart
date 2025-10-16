@@ -205,14 +205,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Text(
-                        'فكر جيدًا واختر الصورة التي تمثل التصرف السليم.',
-                        style: textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          height: 1.4,
-                        ),
-                      ),
+                      
                     ],
                     const Spacer(),
                     _ChoicesBoard(
