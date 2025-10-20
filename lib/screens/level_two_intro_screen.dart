@@ -21,7 +21,7 @@ class LevelTwoIntroScreen extends StatelessWidget {
           final maxWidth = constraints.maxWidth;
           final maxHeight = constraints.maxHeight;
           final padding = MediaQuery.of(context).padding;
-          final availableHeight = math.max(0, maxHeight - padding.vertical);
+          final availableHeight = math.max(0, maxHeight - padding.vertical).toDouble();
           final widthScale = Responsive.scaleForWidth(
             maxWidth,
             baseWidth: 390,
