@@ -42,17 +42,26 @@ class LevelTwoIntroScreen extends StatelessWidget {
           final buttonShadowOpacity = Responsive.clamp(0.32 * scale, 0.2, 0.45);
 
           const bannerAspectRatio = 440 / 956;
+          final safeBannerHeight = availableHeight > 0 ? availableHeight : maxHeight;
           final screenAspectRatio = maxWidth / maxHeight;
           double bannerWidth;
           double bannerHeight;
           if (screenAspectRatio > bannerAspectRatio) {
-            bannerHeight = maxHeight;
+            bannerHeight = safeBannerHeight;
             bannerWidth = bannerHeight * bannerAspectRatio;
           } else {
             bannerWidth = maxWidth;
             bannerHeight = bannerWidth / bannerAspectRatio;
+            if (bannerHeight > safeBannerHeight) {
+              bannerHeight = safeBannerHeight;
+              bannerWidth = bannerHeight * bannerAspectRatio;
+            }
           }
           final buttonMaxWidth = Responsive.clamp(contentMaxWidth * 0.65, 240, 460);
+          final bannerPadding = EdgeInsets.only(
+            top: padding.top,
+            bottom: padding.bottom,
+          );
 
           return Stack(
             fit: StackFit.expand,
@@ -60,28 +69,34 @@ class LevelTwoIntroScreen extends StatelessWidget {
               const Positioned.fill(
                 child: ColoredBox(color: Colors.black),
               ),
-              Align(
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: bannerWidth,
-                  height: bannerHeight,
-                  child: Image.asset(
-                    'assets/images/banner.png',
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
+              Padding(
+                padding: bannerPadding,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: bannerWidth,
+                    height: bannerHeight,
+                    child: Image.asset(
+                      'assets/images/banner.png',
+                      fit: BoxFit.contain,
+                      alignment: Alignment.center,
+                    ),
                   ),
                 ),
               ),
               Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.black.withOpacity(0.1),
-                        Colors.black.withOpacity(0.5),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+                child: Padding(
+                  padding: bannerPadding,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.black.withOpacity(0.1),
+                          Colors.black.withOpacity(0.5),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
                     ),
                   ),
                 ),
