@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
+import '../utils/responsive.dart';
 import '../utils/sound_effects.dart';
 import 'level_completion_screen.dart';
 
@@ -251,32 +252,65 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
           // متابعة بعد النهاية
           if (_showFinalLayer)
             SafeArea(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1E6F5C),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                      ),
-                      onPressed: _goToCompletion,
-                      child: Text(
-                        'متابعة',
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final width = constraints.maxWidth;
+                  final padding = EdgeInsets.fromLTRB(
+                    Responsive.horizontalPadding(
+                      width,
+                      minPadding: 20,
+                      maxContentWidth: 600,
+                    ),
+                    0,
+                    Responsive.horizontalPadding(
+                      width,
+                      minPadding: 20,
+                      maxContentWidth: 600,
+                    ),
+                    Responsive.scaledValue(
+                      width,
+                      20,
+                      min: 16,
+                      max: 36,
+                    ),
+                  );
+                  final buttonPadding = EdgeInsets.symmetric(
+                    vertical: Responsive.scaledValue(
+                      width,
+                      14,
+                      min: 12,
+                      max: 18,
+                    ),
+                  );
+
+                  return Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: padding,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1E6F5C),
+                            foregroundColor: Colors.white,
+                            padding: buttonPadding,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                          ),
+                          onPressed: _goToCompletion,
+                          child: Text(
+                            'متابعة',
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
         ],
@@ -305,9 +339,28 @@ class _TopHudState extends State<_TopHud> {
       right: 0,
       child: SafeArea(
         bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8.0, left: 12, right: 12),
-          child: Stack(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final horizontalPadding = Responsive.horizontalPadding(
+              width,
+              minPadding: 12,
+              maxContentWidth: 720,
+            );
+            final topPadding = Responsive.scaledValue(
+              width,
+              8,
+              min: 6,
+              max: 14,
+            );
+
+            return Padding(
+              padding: EdgeInsets.only(
+                top: topPadding,
+                left: horizontalPadding,
+                right: horizontalPadding,
+              ),
+              child: Stack(
             alignment: Alignment.center,
             children: [
               Align(
@@ -386,6 +439,8 @@ class _TopHudState extends State<_TopHud> {
               ),
             ],
           ),
+            );
+          },
         ),
       ),
     );
@@ -588,33 +643,92 @@ class _ViolationInfoCard extends StatelessWidget {
       left: 0,
       right: 0,
       bottom: 0,
-      child: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: Dismissible(
-            key: ValueKey(spot.id),
-            direction: DismissDirection.down,
-            onDismissed: (_) => onDismiss(),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(cardOpacity),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.white.withOpacity(0.45)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.10),
-                        blurRadius: 14,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          final mediaQuery = MediaQuery.of(context);
+          final safeMinimum = Responsive.symmetricPadding(
+            width,
+            horizontal: 20,
+            vertical: Responsive.scaledValue(
+              width,
+              16,
+              min: 12,
+              max: 28,
+            ),
+            maxContentWidth: Responsive.valueForWidth(
+              width,
+              narrow: 560,
+              wide: 720,
+              breakpoint: 900,
+            ),
+          );
+          final contentHorizontal = Responsive.horizontalPadding(
+            width,
+            minPadding: 20,
+            maxContentWidth: 600,
+          );
+          final topPadding = Responsive.scaledValue(
+            width,
+            20,
+            min: 16,
+            max: 28,
+          );
+          final bottomPadding = Responsive.scaledValue(
+            width,
+            16,
+            min: 12,
+            max: 24,
+          );
+          final textScale = Responsive.scaleForWidth(
+            width,
+            baseWidth: 390,
+            minScale: 0.95,
+            maxScale: 1.2,
+          );
+
+          return SafeArea(
+            minimum: safeMinimum,
+            child: MediaQuery(
+              data: mediaQuery.copyWith(textScaleFactor: textScale),
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 720),
+                    child: Dismissible(
+                      key: ValueKey(spot.id),
+                      direction: DismissDirection.down,
+                      onDismissed: (_) => onDismiss(),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(
+                            sigmaX: blurSigma,
+                            sigmaY: blurSigma,
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(
+                              contentHorizontal,
+                              topPadding,
+                              contentHorizontal,
+                              bottomPadding,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(cardOpacity),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.45),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.10),
+                                  blurRadius: 14,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
+                            ),
+                            child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -697,12 +811,16 @@ class _ViolationInfoCard extends StatelessWidget {
                         ),
                       ),
                     ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

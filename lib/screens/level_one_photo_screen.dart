@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../utils/responsive.dart';
 import '../utils/sound_effects.dart';
 import 'level_completion_screen.dart';
 
@@ -163,77 +164,144 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
         children: [
           Image.asset('assets/images/levelBackground.png', fit: BoxFit.cover),
           SafeArea(
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 36),
-                    Text(
-                      'اختر نوع الصورة',
-                      textAlign: TextAlign.center,
-                      style: textTheme.displaySmall?.copyWith(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Expanded(
-                      child: Center(
-                        child: Container(
-                          constraints: const BoxConstraints(maxWidth: 320, maxHeight: 240),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(28),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.25),
-                                blurRadius: 20,
-                                offset: const Offset(0, 14),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final mediaQuery = MediaQuery.of(context);
+                final padding = Responsive.symmetricPadding(
+                  width,
+                  horizontal: 24,
+                  vertical: Responsive.scaledValue(
+                    width,
+                    24,
+                    min: 16,
+                    max: 40,
+                  ),
+                  maxContentWidth: Responsive.valueForWidth(
+                    width,
+                    narrow: 560,
+                    wide: 720,
+                    breakpoint: 900,
+                  ),
+                );
+                final topSpacing = Responsive.scaledValue(
+                  width,
+                  36,
+                  min: 20,
+                  max: 60,
+                );
+                final betweenSpacing = Responsive.scaledValue(
+                  width,
+                  24,
+                  min: 20,
+                  max: 40,
+                );
+                final imageMaxWidth = Responsive.scaledValue(
+                  width,
+                  320,
+                  min: 260,
+                  max: 420,
+                );
+                final imageMaxHeight = Responsive.scaledValue(
+                  width,
+                  240,
+                  min: 200,
+                  max: 320,
+                );
+                final buttonSpacing = Responsive.scaledValue(
+                  width,
+                  16,
+                  min: 12,
+                  max: 24,
+                );
+                final textScale = Responsive.scaleForWidth(
+                  width,
+                  baseWidth: 390,
+                  minScale: 0.95,
+                  maxScale: 1.2,
+                );
+
+                return MediaQuery(
+                  data: mediaQuery.copyWith(textScaleFactor: textScale),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Padding(
+                      padding: padding,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(height: topSpacing),
+                          Text(
+                            'اختر نوع الصورة',
+                            textAlign: TextAlign.center,
+                            style: textTheme.displaySmall?.copyWith(
+                              fontSize: 34,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: betweenSpacing),
+                          Expanded(
+                            child: Center(
+                              child: Container(
+                                constraints: BoxConstraints(
+                                  maxWidth: imageMaxWidth,
+                                  maxHeight: imageMaxHeight,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(28),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.25),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 14),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(28),
+                                  child: Image.asset(
+                                    _currentImage,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: betweenSpacing),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _ChoiceButton(
+                                  label: 'تشوه بصري',
+                                  backgroundColor: const Color(0xFFA66B55),
+                                  textColor: const Color(0xFFF7E7DC),
+                                  onPressed: _showFeedback
+                                      ? null
+                                      : () =>
+                                          _onAnswerSelected(PhotoCategory.visualPollution),
+                                ),
+                              ),
+                              SizedBox(width: buttonSpacing),
+                              Expanded(
+                                child: _ChoiceButton(
+                                  label: 'منظر حضاري',
+                                  backgroundColor: const Color(0xFF1E6F5C),
+                                  textColor: const Color(0xFFEAF5EE),
+                                  onPressed: _showFeedback
+                                      ? null
+                                      : () =>
+                                          _onAnswerSelected(PhotoCategory.civilizedView),
+                                ),
                               ),
                             ],
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(28),
-                            child: Image.asset(
-                              _currentImage,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _ChoiceButton(
-                            label: 'تشوه بصري',
-                            backgroundColor: const Color(0xFFA66B55),
-                            textColor: const Color(0xFFF7E7DC),
-                            onPressed: _showFeedback
-                                ? null
-                                : () => _onAnswerSelected(PhotoCategory.visualPollution),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _ChoiceButton(
-                            label: 'منظر حضاري',
-                            backgroundColor: const Color(0xFF1E6F5C),
-                            textColor: const Color(0xFFEAF5EE),
-                            onPressed: _showFeedback
-                                ? null
-                                : () => _onAnswerSelected(PhotoCategory.civilizedView),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           ),
 
