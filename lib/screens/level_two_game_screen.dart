@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
+import '../utils/responsive.dart';
 import '../utils/sound_effects.dart';
 import 'level_completion_screen.dart';
 
@@ -186,6 +187,19 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final screenSize = MediaQuery.of(context).size;
+    final screenScale = Responsive.scaleForWidth(
+      screenSize.width,
+      baseWidth: 390,
+      minScale: 0.85,
+      maxScale: 1.35,
+    );
+    final bottomPadding = Responsive.clamp(20 * screenScale, 16, 40);
+    final bottomHorizontalPadding = Responsive.clamp(20 * screenScale, 16, 48);
+    final bottomButtonWidth = Responsive.clamp(screenSize.width * 0.6, 240, 520);
+    final bottomButtonPadding = Responsive.clamp(14 * screenScale, 12, 22);
+    final bottomButtonRadius = Responsive.clamp(18 * screenScale, 16, 30);
+    final bottomButtonFontSize = Responsive.clamp(20 * screenScale, 16, 28);
 
     return Scaffold(
       body: Stack(
@@ -259,16 +273,21 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  padding: EdgeInsets.fromLTRB(
+                    bottomHorizontalPadding,
+                    0,
+                    bottomHorizontalPadding,
+                    bottomPadding,
+                  ),
                   child: SizedBox(
-                    width: double.infinity,
+                    width: bottomButtonWidth,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1E6F5C),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: bottomButtonPadding),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(bottomButtonRadius),
                         ),
                       ),
                       onPressed: _goToCompletion,
@@ -277,6 +296,7 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
                         style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
+                          fontSize: bottomButtonFontSize,
                         ),
                       ),
                     ),
@@ -306,6 +326,20 @@ class _TopHud extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final scale = Responsive.scaleForWidth(
+      screenWidth,
+      baseWidth: 390,
+      minScale: 0.85,
+      maxScale: 1.3,
+    );
+    final horizontalPadding = Responsive.clamp(12 * scale, 8, 20);
+    final verticalPadding = Responsive.clamp(8 * scale, 6, 16);
+    final iconSize = Responsive.clamp(24 * scale, 20, 32);
+    final titleFontSize = Responsive.clamp(18 * scale, 14, 24);
+    final counterPaddingH = Responsive.clamp(18 * scale, 12, 28);
+    final counterPaddingV = Responsive.clamp(8 * scale, 6, 14);
+    final counterFontSize = Responsive.clamp(20 * scale, 16, 28);
 
     return Positioned(
       top: 0,
@@ -314,7 +348,11 @@ class _TopHud extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.only(top: 8.0, left: 12, right: 12),
+          padding: EdgeInsets.only(
+            top: verticalPadding,
+            left: horizontalPadding,
+            right: horizontalPadding,
+          ),
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -329,9 +367,13 @@ class _TopHud extends StatelessWidget {
                       SoundEffects.playClaim();
                       Navigator.of(context).pop();
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                    child: Padding(
+                      padding: EdgeInsets.all(Responsive.clamp(10 * scale, 8, 14)),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: iconSize,
+                      ),
                     ),
                   ),
                 ),
@@ -346,9 +388,13 @@ class _TopHud extends StatelessWidget {
                     onTap: () {
                       SoundEffects.playClaim();
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Icon(Icons.person, color: Colors.white),
+                    child: Padding(
+                      padding: EdgeInsets.all(Responsive.clamp(10 * scale, 8, 14)),
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.white,
+                        size: iconSize,
+                      ),
                     ),
                   ),
                 ),
@@ -361,21 +407,25 @@ class _TopHud extends StatelessWidget {
                     style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
+                      fontSize: titleFontSize,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: Responsive.clamp(6 * scale, 4, 10)),
                   AnimatedScale(
                     duration: const Duration(milliseconds: 180),
                     scale: counterPulse,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: counterPaddingH,
+                        vertical: counterPaddingV,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF00695C),
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.18),
-                            blurRadius: 10,
+                            blurRadius: Responsive.clamp(10 * scale, 6, 16),
                             offset: const Offset(0, 4),
                           ),
                         ],
@@ -385,7 +435,8 @@ class _TopHud extends StatelessWidget {
                         style: textTheme.titleLarge?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 2,
+                          letterSpacing: Responsive.clamp(2 * scale, 1, 3),
+                          fontSize: counterFontSize,
                         ),
                       ),
                     ),
@@ -588,6 +639,13 @@ class _ViolationInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final scale = Responsive.scaleForWidth(
+      screenWidth,
+      baseWidth: 390,
+      minScale: 0.85,
+      maxScale: 1.3,
+    );
 
     const double cardOpacity = 0.35;
     const double blurSigma = 16;
@@ -597,7 +655,10 @@ class _ViolationInfoCard extends StatelessWidget {
       right: 0,
       bottom: 0,
       child: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        minimum: EdgeInsets.symmetric(
+          horizontal: Responsive.clamp(20 * scale, 14, 36),
+          vertical: Responsive.clamp(16 * scale, 12, 28),
+        ),
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: Dismissible(
@@ -605,19 +666,24 @@ class _ViolationInfoCard extends StatelessWidget {
             direction: DismissDirection.down,
             onDismissed: (_) => onDismiss(),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(Responsive.clamp(24 * scale, 18, 36)),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                  padding: EdgeInsets.fromLTRB(
+                    Responsive.clamp(20 * scale, 16, 32),
+                    Responsive.clamp(20 * scale, 16, 32),
+                    Responsive.clamp(20 * scale, 16, 32),
+                    Responsive.clamp(16 * scale, 12, 28),
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(cardOpacity),
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(Responsive.clamp(24 * scale, 18, 36)),
                     border: Border.all(color: Colors.white.withOpacity(0.45)),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.10),
-                        blurRadius: 14,
+                        blurRadius: Responsive.clamp(14 * scale, 10, 22),
                         offset: const Offset(0, 10),
                       ),
                     ],
@@ -630,10 +696,13 @@ class _ViolationInfoCard extends StatelessWidget {
                         children: [
                           IconButton(
                             onPressed: onDismiss,
-                            icon: const Icon(Icons.close_rounded),
+                            icon: Icon(
+                              Icons.close_rounded,
+                              size: Responsive.clamp(24 * scale, 20, 32),
+                            ),
                             color: const Color(0xFF2F2F2F),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: Responsive.clamp(8 * scale, 6, 14)),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -643,9 +712,11 @@ class _ViolationInfoCard extends StatelessWidget {
                                   style: textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFF1E6F5C),
+                                    fontSize:
+                                        Responsive.clamp((textTheme.titleLarge?.fontSize ?? 24) * scale, 18, 30),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                SizedBox(height: Responsive.clamp(4 * scale, 2, 8)),
                                 Text(
                                   isFirstTime
                                       ? 'أحسنت! لقد اكتشفت تشوهاً بصرياً.'
@@ -653,45 +724,59 @@ class _ViolationInfoCard extends StatelessWidget {
                                   style: textTheme.bodyMedium?.copyWith(
                                     color: const Color(0xFF3F3F3F),
                                     fontWeight: FontWeight.w600,
+                                    fontSize: Responsive.clamp(
+                                      (textTheme.bodyMedium?.fontSize ?? 16) * scale,
+                                      14,
+                                      22,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: Responsive.clamp(8 * scale, 6, 14)),
                           Container(
                             decoration: BoxDecoration(
                               color: const Color(0xFF1E6F5C).withOpacity(0.12),
                               shape: BoxShape.circle,
                             ),
-                            padding: const EdgeInsets.all(10),
-                            child: const Icon(
+                            padding: EdgeInsets.all(Responsive.clamp(10 * scale, 8, 16)),
+                            child: Icon(
                               Icons.check_circle_outline,
                               color: Color(0xFF1E6F5C),
-                              size: 26,
+                              size: Responsive.clamp(26 * scale, 20, 34),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: Responsive.clamp(12 * scale, 8, 20)),
                       Text(
                         spot.description,
                         style: textTheme.bodyLarge?.copyWith(
                           height: 1.6,
                           color: const Color(0xFF2B2B2B),
                           fontWeight: FontWeight.w600,
+                          fontSize: Responsive.clamp(
+                            (textTheme.bodyLarge?.fontSize ?? 18) * scale,
+                            16,
+                            26,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 14),
+                      SizedBox(height: Responsive.clamp(14 * scale, 10, 22)),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1E6F5C),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(
+                              vertical: Responsive.clamp(14 * scale, 12, 22),
+                            ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
+                              borderRadius: BorderRadius.circular(
+                                Responsive.clamp(18 * scale, 14, 28),
+                              ),
                             ),
                           ),
                           onPressed: onDismiss,
@@ -700,6 +785,11 @@ class _ViolationInfoCard extends StatelessWidget {
                             style: textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
+                              fontSize: Responsive.clamp(
+                                (textTheme.titleMedium?.fontSize ?? 20) * scale,
+                                16,
+                                26,
+                              ),
                             ),
                           ),
                         ),
