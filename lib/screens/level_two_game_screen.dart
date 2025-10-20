@@ -202,6 +202,7 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
     final bottomButtonFontSize = Responsive.clamp(20 * screenScale, 16, 28);
 
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -479,83 +480,103 @@ class _LevelTwoSceneState extends State<_LevelTwoScene> {
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.cover,
-      alignment: Alignment.topCenter,
-      clipBehavior: Clip.hardEdge,
-      child: SizedBox(
-        width: _LevelTwoScene.designWidth,
-        height: _LevelTwoScene.designHeight,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/LevelTwo/levelTwoBackground.jpg',
-                fit: BoxFit.cover,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final height = constraints.maxHeight;
+        final targetAspect = _LevelTwoScene.designWidth / _LevelTwoScene.designHeight;
+        final currentAspect = width / height;
+
+        double scale;
+        if (currentAspect > targetAspect) {
+          // الشاشة أعرض من التصميم: استعمل الارتفاع كمرجع وأضف مساحات جانبية
+          scale = height / _LevelTwoScene.designHeight;
+        } else {
+          // الشاشة أطول من التصميم: استعمل العرض كمرجع وأضف مساحات علوية/سفلية
+          scale = width / _LevelTwoScene.designWidth;
+        }
+
+        final childWidth = _LevelTwoScene.designWidth * scale;
+        final childHeight = _LevelTwoScene.designHeight * scale;
+
+        return Center(
+          child: SizedBox(
+            width: childWidth,
+            height: childHeight,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(Responsive.clamp(12 * scale, 0, 18)),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'assets/images/LevelTwo/levelTwoBackground.jpg',
+                    fit: BoxFit.cover,
+                  ),
+
+                  // أماكن اللمس (غير مرئية)
+                  ...widget.spots.map((spot) {
+                    final rect = Rect.fromLTWH(
+                      spot.area.left * _LevelTwoScene.designWidth,
+                      spot.area.top * _LevelTwoScene.designHeight,
+                      spot.area.width * _LevelTwoScene.designWidth,
+                      spot.area.height * _LevelTwoScene.designHeight,
+                    );
+                    final isFound = widget.found.contains(spot.id);
+                    return Positioned(
+                      left: rect.left,
+                      top: rect.top,
+                      width: rect.width,
+                      height: rect.height,
+                      child: _ViolationHitBox(
+                        isFound: isFound,
+                        onTap: () => widget.onSpotTap(spot),
+                      ),
+                    );
+                  }),
+
+                  // وضع التصميم الاختياري: رسم مستطيل وأخذ النِسَب
+                  if (widget.designMode)
+                    Positioned.fill(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onPanStart: (d) {
+                          final p = d.localPosition;
+                          setState(() => _draftRect = Rect.fromLTWH(p.dx, p.dy, 0, 0));
+                        },
+                        onPanUpdate: (d) {
+                          if (_draftRect == null) return;
+                          final s = _draftRect!.topLeft;
+                          final c = d.localPosition;
+                          final l = math.min(s.dx, c.dx);
+                          final t = math.min(s.dy, c.dy);
+                          final w = (c.dx - s.dx).abs();
+                          final h = (c.dy - s.dy).abs();
+                          setState(() => _draftRect = Rect.fromLTWH(l, t, w, h));
+                        },
+                        onPanEnd: (_) {
+                          if (_draftRect == null) return;
+                          final r = _draftRect!;
+                          setState(() => _draftRect = null);
+                          final normalized = Rect.fromLTWH(
+                            (r.left / _LevelTwoScene.designWidth).clamp(0.0, 1.0),
+                            (r.top / _LevelTwoScene.designHeight).clamp(0.0, 1.0),
+                            (r.width / _LevelTwoScene.designWidth).clamp(0.0, 1.0),
+                            (r.height / _LevelTwoScene.designHeight).clamp(0.0, 1.0),
+                          );
+                          widget.onNewRect(normalized);
+                        },
+                        child: IgnorePointer(
+                          ignoring: true,
+                          child: CustomPaint(painter: _DraftRectPainter(_draftRect)),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-
-            // أماكن اللمس (غير مرئية)
-            ...widget.spots.map((spot) {
-              final rect = Rect.fromLTWH(
-                spot.area.left * _LevelTwoScene.designWidth,
-                spot.area.top * _LevelTwoScene.designHeight,
-                spot.area.width * _LevelTwoScene.designWidth,
-                spot.area.height * _LevelTwoScene.designHeight,
-              );
-              final isFound = widget.found.contains(spot.id);
-              return Positioned(
-                left: rect.left,
-                top: rect.top,
-                width: rect.width,
-                height: rect.height,
-                child: _ViolationHitBox(
-                  isFound: isFound,
-                  onTap: () => widget.onSpotTap(spot),
-                ),
-              );
-            }),
-
-            // وضع التصميم الاختياري: رسم مستطيل وأخذ النِسَب
-            if (widget.designMode)
-              Positioned.fill(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onPanStart: (d) {
-                    final p = d.localPosition;
-                    setState(() => _draftRect = Rect.fromLTWH(p.dx, p.dy, 0, 0));
-                  },
-                  onPanUpdate: (d) {
-                    if (_draftRect == null) return;
-                    final s = _draftRect!.topLeft;
-                    final c = d.localPosition;
-                    final l = math.min(s.dx, c.dx);
-                    final t = math.min(s.dy, c.dy);
-                    final w = (c.dx - s.dx).abs();
-                    final h = (c.dy - s.dy).abs();
-                    setState(() => _draftRect = Rect.fromLTWH(l, t, w, h));
-                  },
-                  onPanEnd: (_) {
-                    if (_draftRect == null) return;
-                    final r = _draftRect!;
-                    setState(() => _draftRect = null);
-                    final normalized = Rect.fromLTWH(
-                      (r.left / _LevelTwoScene.designWidth).clamp(0.0, 1.0),
-                      (r.top / _LevelTwoScene.designHeight).clamp(0.0, 1.0),
-                      (r.width / _LevelTwoScene.designWidth).clamp(0.0, 1.0),
-                      (r.height / _LevelTwoScene.designHeight).clamp(0.0, 1.0),
-                    );
-                    widget.onNewRect(normalized);
-                  },
-                  child: IgnorePointer(
-                    ignoring: true,
-                    child: CustomPaint(painter: _DraftRectPainter(_draftRect)),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

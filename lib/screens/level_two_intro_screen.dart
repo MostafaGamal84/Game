@@ -16,100 +16,133 @@ class LevelTwoIntroScreen extends StatelessWidget {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final maxWidth = constraints.maxWidth;
+          final maxHeight = constraints.maxHeight;
           final scale = Responsive.scaleForWidth(
             maxWidth,
             baseWidth: 390,
             minScale: 0.88,
-            maxScale: 1.45,
+            maxScale: 1.55,
           );
-          final horizontalPadding = Responsive.clamp(24 * scale, 16, 64);
-          final verticalPadding = Responsive.clamp(32 * scale, 24, 72);
-          final buttonWidth = Responsive.clamp(maxWidth * 0.45, 220, 420);
-          final buttonHeight = Responsive.clamp(60 * scale, 52, 84);
-          final titleFontSize = Responsive.clamp(48 * scale, 34, 66);
-          final spacing = Responsive.clamp(24 * scale, 18, 40);
-          final buttonFontSize = Responsive.clamp(22 * scale, 18, 30);
-          final buttonRadius = Responsive.clamp(28 * scale, 22, 40);
-          final iconSize = Responsive.clamp(24 * scale, 20, 32);
+          final contentMaxWidth = Responsive.clamp(maxWidth * 0.9, 360, 680);
+          final contentHorizontalPadding = Responsive.clamp(24 * scale, 16, 48);
+          final contentVerticalPadding = Responsive.clamp(32 * scale, 24, 64);
+          final buttonHeight = Responsive.clamp(60 * scale, 52, 86);
+          final titleFontSize = Responsive.clamp(48 * scale, 36, 68);
+          final spacing = Responsive.clamp(24 * scale, 18, 44);
+          final buttonFontSize = Responsive.clamp(22 * scale, 18, 32);
+          final buttonRadius = Responsive.clamp(28 * scale, 22, 42);
+          final iconSize = Responsive.clamp(24 * scale, 22, 36);
+          final buttonShadowOpacity = Responsive.clamp(0.35 * scale, 0.2, 0.5);
 
           return Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset(
-                'assets/images/banner.png',
-                fit: BoxFit.cover,
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/banner.png',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                ),
+              ),
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withOpacity(0.15),
+                        Colors.black.withOpacity(0.4),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                ),
               ),
               SafeArea(
                 child: Directionality(
                   textDirection: TextDirection.rtl,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: horizontalPadding,
-                      vertical: verticalPadding,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            icon: Icon(Icons.arrow_back_ios_new_rounded, size: iconSize),
-                            color: Colors.white,
-                          ),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: contentMaxWidth,
+                        maxHeight: maxHeight,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: contentHorizontalPadding,
+                          vertical: contentVerticalPadding,
                         ),
-                        SizedBox(height: spacing),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'لعبة\nابحث عن التشوه',
-                            textAlign: TextAlign.center,
-                            style: baseTitleStyle.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: titleFontSize,
-                              height: 1.2,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-
-                        Center(
-                          child: SizedBox(
-                            width: buttonWidth,
-                            height: buttonHeight,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF1E6F5C),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(buttonRadius),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: IconButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                icon: Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  size: iconSize,
                                 ),
-                                elevation: 6,
-                                shadowColor: const Color(0xFF1E6F5C)
-                                    .withOpacity(Responsive.clamp(0.35 * scale, 0.2, 0.45)),
-                                textStyle: textTheme.titleMedium?.copyWith(
-                                  fontSize: buttonFontSize,
-                                  fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: spacing),
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'لعبة\nابحث عن التشوه',
+                                textAlign: TextAlign.center,
+                                style: baseTitleStyle.copyWith(
                                   color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: titleFontSize,
+                                  height: 1.2,
                                 ),
                               ),
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const LevelTwoGameScreen(),
-                                  ),
-                                );
-                              },
-                              child: const Text('ابدأ اللعب'),
                             ),
-                          ),
+                            const Spacer(),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: Responsive.clamp(contentMaxWidth * 0.7, 240, 480),
+                                ),
+                                child: SizedBox(
+                                  height: buttonHeight,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF1E6F5C),
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(buttonRadius),
+                                      ),
+                                      elevation: 8,
+                                      shadowColor: const Color(0xFF1E6F5C)
+                                          .withOpacity(buttonShadowOpacity),
+                                      textStyle: textTheme.titleMedium?.copyWith(
+                                        fontSize: buttonFontSize,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => const LevelTwoGameScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text('ابدأ اللعب'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: spacing),
+                          ],
                         ),
-
-                        SizedBox(height: spacing),
-                      ],
+                      ),
                     ),
                   ),
                 ),
