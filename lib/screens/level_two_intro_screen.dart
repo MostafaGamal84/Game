@@ -98,40 +98,17 @@ class LevelTwoIntroScreen extends StatelessWidget {
                         end: Alignment.bottomCenter,
                       ),
                     ),
-                  ),
-                ),
-              ),
-              SafeArea(
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: contentMaxWidth,
-                        maxHeight: maxHeight,
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: contentHorizontalPadding,
-                        ).copyWith(
-                          top: contentVerticalPadding,
-                          bottom: contentVerticalPadding,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                icon: Icon(
-                                  Icons.arrow_back_ios_new_rounded,
-                                  size: iconSize,
-                                ),
-                                color: Colors.white,
-                              ),
+                    const Spacer(),
+                    Center(
+                      child: SizedBox(
+                        width: 220,
+                        height: 60,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1E6F5C),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
                             ),
                             SizedBox(height: spacing),
                             Align(
@@ -189,7 +166,8 @@ class LevelTwoIntroScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                  ],
                 ),
               ),
             ],
