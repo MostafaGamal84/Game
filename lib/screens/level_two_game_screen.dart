@@ -703,10 +703,7 @@ class _ViolationInfoCard extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
                         child: BackdropFilter(
-                          filter: ImageFilter.blur(
-                            sigmaX: blurSigma,
-                            sigmaY: blurSigma,
-                          ),
+                          filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
                           child: Container(
                             padding: EdgeInsets.fromLTRB(
                               contentHorizontal,
@@ -717,9 +714,7 @@ class _ViolationInfoCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(cardOpacity),
                               borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.45),
-                              ),
+                              border: Border.all(color: Colors.white.withOpacity(0.45)),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.10),
@@ -729,88 +724,89 @@ class _ViolationInfoCard extends StatelessWidget {
                               ],
                             ),
                             child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: onDismiss,
-                            icon: const Icon(Icons.close_rounded),
-                            color: const Color(0xFF2F2F2F),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: onDismiss,
+                                      icon: const Icon(Icons.close_rounded),
+                                      color: const Color(0xFF2F2F2F),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            spot.title,
+                                            style: textTheme.titleLarge?.copyWith(
+                                              fontWeight: FontWeight.w800,
+                                              color: const Color(0xFF1E6F5C),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            isFirstTime
+                                                ? 'أحسنت! لقد اكتشفت تشوهاً بصرياً.'
+                                                : 'هذا شرح العنصر الذي اخترته.',
+                                            style: textTheme.bodyMedium?.copyWith(
+                                              color: const Color(0xFF3F3F3F),
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF1E6F5C).withOpacity(0.12),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      child: const Icon(
+                                        Icons.check_circle_outline,
+                                        color: Color(0xFF1E6F5C),
+                                        size: 26,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
                                 Text(
-                                  spot.title,
-                                  style: textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF1E6F5C),
+                                  spot.description,
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    height: 1.6,
+                                    color: const Color(0xFF2B2B2B),
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  isFirstTime
-                                      ? 'أحسنت! لقد اكتشفت تشوهاً بصرياً.'
-                                      : 'هذا شرح العنصر الذي اخترته.',
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    color: const Color(0xFF3F3F3F),
-                                    fontWeight: FontWeight.w600,
+                                const SizedBox(height: 14),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF1E6F5C),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(18),
+                                      ),
+                                    ),
+                                    onPressed: onDismiss,
+                                    child: Text(
+                                      isFirstTime ? 'تابع البحث' : 'إغلاق',
+                                      style: textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1E6F5C).withOpacity(0.12),
-                              shape: BoxShape.circle,
-                            ),
-                            padding: const EdgeInsets.all(10),
-                            child: const Icon(
-                              Icons.check_circle_outline,
-                              color: Color(0xFF1E6F5C),
-                              size: 26,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        spot.description,
-                        style: textTheme.bodyLarge?.copyWith(
-                          height: 1.6,
-                          color: const Color(0xFF2B2B2B),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1E6F5C),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                          ),
-                          onPressed: onDismiss,
-                          child: Text(
-                            isFirstTime ? 'تابع البحث' : 'إغلاق',
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                           ),
                         ),
                       ),
