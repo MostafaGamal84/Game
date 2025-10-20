@@ -52,8 +52,6 @@ class LevelTwoIntroScreen extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-
-                    // ✅ زرار موحد في الحجم والتصميم
                     Center(
                       child: SizedBox(
                         width: 220,
@@ -84,7 +82,6 @@ class LevelTwoIntroScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 24),
                   ],
                 ),
