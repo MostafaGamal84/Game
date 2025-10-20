@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-import '../utils/responsive.dart';
 import '../utils/sound_effects.dart';
 import 'level_completion_screen.dart';
 
@@ -187,22 +186,8 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final screenSize = MediaQuery.of(context).size;
-    final screenScale = Responsive.scaleForWidth(
-      screenSize.width,
-      baseWidth: 390,
-      minScale: 0.85,
-      maxScale: 1.35,
-    );
-    final bottomPadding = Responsive.clamp(20 * screenScale, 16, 40);
-    final bottomHorizontalPadding = Responsive.clamp(20 * screenScale, 16, 48);
-    final bottomButtonWidth = Responsive.clamp(screenSize.width * 0.6, 240, 520);
-    final bottomButtonPadding = Responsive.clamp(14 * screenScale, 12, 22);
-    final bottomButtonRadius = Responsive.clamp(18 * screenScale, 16, 30);
-    final bottomButtonFontSize = Responsive.clamp(20 * screenScale, 16, 28);
 
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -253,12 +238,7 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
             ),
 
           // HUD أعلى الشاشة
-          if (!_playFinish)
-            _TopHud(
-              foundCount: _foundCount,
-              totalCount: _totalCount,
-              counterPulse: _counterPulse,
-            ),
+          if (!_playFinish) const _TopHud(),
 
           // كارت الشرح
           if (_activeSpot != null)
@@ -274,21 +254,16 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    bottomHorizontalPadding,
-                    0,
-                    bottomHorizontalPadding,
-                    bottomPadding,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                   child: SizedBox(
-                    width: bottomButtonWidth,
+                    width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1E6F5C),
                         foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: bottomButtonPadding),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(bottomButtonRadius),
+                          borderRadius: BorderRadius.circular(18),
                         ),
                       ),
                       onPressed: _goToCompletion,
@@ -297,7 +272,6 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
                         style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
-                          fontSize: bottomButtonFontSize,
                         ),
                       ),
                     ),
@@ -312,35 +286,18 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
 }
 
 /// HUD مثبت أعلى الشاشة
-class _TopHud extends StatelessWidget {
-  const _TopHud({
-    super.key,
-    required this.foundCount,
-    required this.totalCount,
-    required this.counterPulse,
-  });
-
-  final int foundCount;
-  final int totalCount;
-  final double counterPulse;
+class _TopHud extends StatefulWidget {
+  const _TopHud({super.key});
 
   @override
+  State<_TopHud> createState() => _TopHudState();
+}
+
+class _TopHudState extends State<_TopHud> {
+  @override
   Widget build(BuildContext context) {
+    final state = context.findAncestorStateOfType<_LevelTwoGameScreenState>()!;
     final textTheme = Theme.of(context).textTheme;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final scale = Responsive.scaleForWidth(
-      screenWidth,
-      baseWidth: 390,
-      minScale: 0.85,
-      maxScale: 1.3,
-    );
-    final horizontalPadding = Responsive.clamp(12 * scale, 8, 20);
-    final verticalPadding = Responsive.clamp(8 * scale, 6, 16);
-    final iconSize = Responsive.clamp(24 * scale, 20, 32);
-    final titleFontSize = Responsive.clamp(18 * scale, 14, 24);
-    final counterPaddingH = Responsive.clamp(18 * scale, 12, 28);
-    final counterPaddingV = Responsive.clamp(8 * scale, 6, 14);
-    final counterFontSize = Responsive.clamp(20 * scale, 16, 28);
 
     return Positioned(
       top: 0,
@@ -349,11 +306,7 @@ class _TopHud extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: EdgeInsets.only(
-            top: verticalPadding,
-            left: horizontalPadding,
-            right: horizontalPadding,
-          ),
+          padding: const EdgeInsets.only(top: 8.0, left: 12, right: 12),
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -368,13 +321,9 @@ class _TopHud extends StatelessWidget {
                       SoundEffects.playClaim();
                       Navigator.of(context).pop();
                     },
-                    child: Padding(
-                      padding: EdgeInsets.all(Responsive.clamp(10 * scale, 8, 14)),
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: Colors.white,
-                        size: iconSize,
-                      ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
                     ),
                   ),
                 ),
@@ -389,13 +338,9 @@ class _TopHud extends StatelessWidget {
                     onTap: () {
                       SoundEffects.playClaim();
                     },
-                    child: Padding(
-                      padding: EdgeInsets.all(Responsive.clamp(10 * scale, 8, 14)),
-                      child: Icon(
-                        Icons.person,
-                        color: Colors.white,
-                        size: iconSize,
-                      ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Icon(Icons.person, color: Colors.white),
                     ),
                   ),
                 ),
@@ -408,36 +353,31 @@ class _TopHud extends StatelessWidget {
                     style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
-                      fontSize: titleFontSize,
                     ),
                   ),
-                  SizedBox(height: Responsive.clamp(6 * scale, 4, 10)),
+                  const SizedBox(height: 6),
                   AnimatedScale(
                     duration: const Duration(milliseconds: 180),
-                    scale: counterPulse,
+                    scale: context.findAncestorStateOfType<_LevelTwoGameScreenState>()!._counterPulse,
                     child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: counterPaddingH,
-                        vertical: counterPaddingV,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                       decoration: BoxDecoration(
                         color: const Color(0xFF00695C),
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.18),
-                            blurRadius: Responsive.clamp(10 * scale, 6, 16),
+                            blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
                         ],
                       ),
                       child: Text(
-                        '$foundCount / $totalCount',
+                        '${state._foundCount} / ${state._totalCount}',
                         style: textTheme.titleLarge?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: Responsive.clamp(2 * scale, 1, 3),
-                          fontSize: counterFontSize,
+                          letterSpacing: 2,
                         ),
                       ),
                     ),
@@ -480,103 +420,83 @@ class _LevelTwoSceneState extends State<_LevelTwoScene> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        final height = constraints.maxHeight;
-        final targetAspect = _LevelTwoScene.designWidth / _LevelTwoScene.designHeight;
-        final currentAspect = width / height;
-
-        double scale;
-        if (currentAspect > targetAspect) {
-          // الشاشة أعرض من التصميم: استعمل الارتفاع كمرجع وأضف مساحات جانبية
-          scale = height / _LevelTwoScene.designHeight;
-        } else {
-          // الشاشة أطول من التصميم: استعمل العرض كمرجع وأضف مساحات علوية/سفلية
-          scale = width / _LevelTwoScene.designWidth;
-        }
-
-        final childWidth = _LevelTwoScene.designWidth * scale;
-        final childHeight = _LevelTwoScene.designHeight * scale;
-
-        return Center(
-          child: SizedBox(
-            width: childWidth,
-            height: childHeight,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(Responsive.clamp(12 * scale, 0, 18)),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.asset(
-                    'assets/images/LevelTwo/levelTwoBackground.jpg',
-                    fit: BoxFit.cover,
-                  ),
-
-                  // أماكن اللمس (غير مرئية)
-                  ...widget.spots.map((spot) {
-                    final rect = Rect.fromLTWH(
-                      spot.area.left * _LevelTwoScene.designWidth,
-                      spot.area.top * _LevelTwoScene.designHeight,
-                      spot.area.width * _LevelTwoScene.designWidth,
-                      spot.area.height * _LevelTwoScene.designHeight,
-                    );
-                    final isFound = widget.found.contains(spot.id);
-                    return Positioned(
-                      left: rect.left,
-                      top: rect.top,
-                      width: rect.width,
-                      height: rect.height,
-                      child: _ViolationHitBox(
-                        isFound: isFound,
-                        onTap: () => widget.onSpotTap(spot),
-                      ),
-                    );
-                  }),
-
-                  // وضع التصميم الاختياري: رسم مستطيل وأخذ النِسَب
-                  if (widget.designMode)
-                    Positioned.fill(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onPanStart: (d) {
-                          final p = d.localPosition;
-                          setState(() => _draftRect = Rect.fromLTWH(p.dx, p.dy, 0, 0));
-                        },
-                        onPanUpdate: (d) {
-                          if (_draftRect == null) return;
-                          final s = _draftRect!.topLeft;
-                          final c = d.localPosition;
-                          final l = math.min(s.dx, c.dx);
-                          final t = math.min(s.dy, c.dy);
-                          final w = (c.dx - s.dx).abs();
-                          final h = (c.dy - s.dy).abs();
-                          setState(() => _draftRect = Rect.fromLTWH(l, t, w, h));
-                        },
-                        onPanEnd: (_) {
-                          if (_draftRect == null) return;
-                          final r = _draftRect!;
-                          setState(() => _draftRect = null);
-                          final normalized = Rect.fromLTWH(
-                            (r.left / _LevelTwoScene.designWidth).clamp(0.0, 1.0),
-                            (r.top / _LevelTwoScene.designHeight).clamp(0.0, 1.0),
-                            (r.width / _LevelTwoScene.designWidth).clamp(0.0, 1.0),
-                            (r.height / _LevelTwoScene.designHeight).clamp(0.0, 1.0),
-                          );
-                          widget.onNewRect(normalized);
-                        },
-                        child: IgnorePointer(
-                          ignoring: true,
-                          child: CustomPaint(painter: _DraftRectPainter(_draftRect)),
-                        ),
-                      ),
-                    ),
-                ],
+    return FittedBox(
+      fit: BoxFit.cover,
+      alignment: Alignment.topCenter,
+      clipBehavior: Clip.hardEdge,
+      child: SizedBox(
+        width: _LevelTwoScene.designWidth,
+        height: _LevelTwoScene.designHeight,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/LevelTwo/levelTwoBackground.jpg',
+                fit: BoxFit.cover,
               ),
             ),
-          ),
-        );
-      },
+
+            // أماكن اللمس (غير مرئية)
+            ...widget.spots.map((spot) {
+              final rect = Rect.fromLTWH(
+                spot.area.left * _LevelTwoScene.designWidth,
+                spot.area.top * _LevelTwoScene.designHeight,
+                spot.area.width * _LevelTwoScene.designWidth,
+                spot.area.height * _LevelTwoScene.designHeight,
+              );
+              final isFound = widget.found.contains(spot.id);
+              return Positioned(
+                left: rect.left,
+                top: rect.top,
+                width: rect.width,
+                height: rect.height,
+                child: _ViolationHitBox(
+                  isFound: isFound,
+                  onTap: () => widget.onSpotTap(spot),
+                ),
+              );
+            }),
+
+            // وضع التصميم الاختياري: رسم مستطيل وأخذ النِسَب
+            if (widget.designMode)
+              Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onPanStart: (d) {
+                    final p = d.localPosition;
+                    setState(() => _draftRect = Rect.fromLTWH(p.dx, p.dy, 0, 0));
+                  },
+                  onPanUpdate: (d) {
+                    if (_draftRect == null) return;
+                    final s = _draftRect!.topLeft;
+                    final c = d.localPosition;
+                    final l = math.min(s.dx, c.dx);
+                    final t = math.min(s.dy, c.dy);
+                    final w = (c.dx - s.dx).abs();
+                    final h = (c.dy - s.dy).abs();
+                    setState(() => _draftRect = Rect.fromLTWH(l, t, w, h));
+                  },
+                  onPanEnd: (_) {
+                    if (_draftRect == null) return;
+                    final r = _draftRect!;
+                    setState(() => _draftRect = null);
+                    final normalized = Rect.fromLTWH(
+                      (r.left / _LevelTwoScene.designWidth).clamp(0.0, 1.0),
+                      (r.top / _LevelTwoScene.designHeight).clamp(0.0, 1.0),
+                      (r.width / _LevelTwoScene.designWidth).clamp(0.0, 1.0),
+                      (r.height / _LevelTwoScene.designHeight).clamp(0.0, 1.0),
+                    );
+                    widget.onNewRect(normalized);
+                  },
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: CustomPaint(painter: _DraftRectPainter(_draftRect)),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -660,13 +580,6 @@ class _ViolationInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final scale = Responsive.scaleForWidth(
-      screenWidth,
-      baseWidth: 390,
-      minScale: 0.85,
-      maxScale: 1.3,
-    );
 
     const double cardOpacity = 0.35;
     const double blurSigma = 16;
@@ -676,10 +589,7 @@ class _ViolationInfoCard extends StatelessWidget {
       right: 0,
       bottom: 0,
       child: SafeArea(
-        minimum: EdgeInsets.symmetric(
-          horizontal: Responsive.clamp(20 * scale, 14, 36),
-          vertical: Responsive.clamp(16 * scale, 12, 28),
-        ),
+        minimum: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: Dismissible(
@@ -687,24 +597,19 @@ class _ViolationInfoCard extends StatelessWidget {
             direction: DismissDirection.down,
             onDismissed: (_) => onDismiss(),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(Responsive.clamp(24 * scale, 18, 36)),
+              borderRadius: BorderRadius.circular(24),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(
-                    Responsive.clamp(20 * scale, 16, 32),
-                    Responsive.clamp(20 * scale, 16, 32),
-                    Responsive.clamp(20 * scale, 16, 32),
-                    Responsive.clamp(16 * scale, 12, 28),
-                  ),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(cardOpacity),
-                    borderRadius: BorderRadius.circular(Responsive.clamp(24 * scale, 18, 36)),
+                    borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: Colors.white.withOpacity(0.45)),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.10),
-                        blurRadius: Responsive.clamp(14 * scale, 10, 22),
+                        blurRadius: 14,
                         offset: const Offset(0, 10),
                       ),
                     ],
@@ -717,13 +622,10 @@ class _ViolationInfoCard extends StatelessWidget {
                         children: [
                           IconButton(
                             onPressed: onDismiss,
-                            icon: Icon(
-                              Icons.close_rounded,
-                              size: Responsive.clamp(24 * scale, 20, 32),
-                            ),
+                            icon: const Icon(Icons.close_rounded),
                             color: const Color(0xFF2F2F2F),
                           ),
-                          SizedBox(width: Responsive.clamp(8 * scale, 6, 14)),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -733,11 +635,9 @@ class _ViolationInfoCard extends StatelessWidget {
                                   style: textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFF1E6F5C),
-                                    fontSize:
-                                        Responsive.clamp((textTheme.titleLarge?.fontSize ?? 24) * scale, 18, 30),
                                   ),
                                 ),
-                                SizedBox(height: Responsive.clamp(4 * scale, 2, 8)),
+                                const SizedBox(height: 4),
                                 Text(
                                   isFirstTime
                                       ? 'أحسنت! لقد اكتشفت تشوهاً بصرياً.'
@@ -745,59 +645,45 @@ class _ViolationInfoCard extends StatelessWidget {
                                   style: textTheme.bodyMedium?.copyWith(
                                     color: const Color(0xFF3F3F3F),
                                     fontWeight: FontWeight.w600,
-                                    fontSize: Responsive.clamp(
-                                      (textTheme.bodyMedium?.fontSize ?? 16) * scale,
-                                      14,
-                                      22,
-                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(width: Responsive.clamp(8 * scale, 6, 14)),
+                          const SizedBox(width: 8),
                           Container(
                             decoration: BoxDecoration(
                               color: const Color(0xFF1E6F5C).withOpacity(0.12),
                               shape: BoxShape.circle,
                             ),
-                            padding: EdgeInsets.all(Responsive.clamp(10 * scale, 8, 16)),
-                            child: Icon(
+                            padding: const EdgeInsets.all(10),
+                            child: const Icon(
                               Icons.check_circle_outline,
                               color: Color(0xFF1E6F5C),
-                              size: Responsive.clamp(26 * scale, 20, 34),
+                              size: 26,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: Responsive.clamp(12 * scale, 8, 20)),
+                      const SizedBox(height: 12),
                       Text(
                         spot.description,
                         style: textTheme.bodyLarge?.copyWith(
                           height: 1.6,
                           color: const Color(0xFF2B2B2B),
                           fontWeight: FontWeight.w600,
-                          fontSize: Responsive.clamp(
-                            (textTheme.bodyLarge?.fontSize ?? 18) * scale,
-                            16,
-                            26,
-                          ),
                         ),
                       ),
-                      SizedBox(height: Responsive.clamp(14 * scale, 10, 22)),
+                      const SizedBox(height: 14),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1E6F5C),
                             foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                              vertical: Responsive.clamp(14 * scale, 12, 22),
-                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                Responsive.clamp(18 * scale, 14, 28),
-                              ),
+                              borderRadius: BorderRadius.circular(18),
                             ),
                           ),
                           onPressed: onDismiss,
@@ -806,11 +692,6 @@ class _ViolationInfoCard extends StatelessWidget {
                             style: textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
-                              fontSize: Responsive.clamp(
-                                (textTheme.titleMedium?.fontSize ?? 20) * scale,
-                                16,
-                                26,
-                              ),
                             ),
                           ),
                         ),

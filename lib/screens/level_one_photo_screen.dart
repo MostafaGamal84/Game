@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import '../utils/sound_effects.dart';
 import 'level_completion_screen.dart';
-import '../utils/responsive.dart';
 
 class LevelOnePhotoScreen extends StatefulWidget {
   const LevelOnePhotoScreen({super.key});
@@ -157,19 +156,6 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final scale = Responsive.scaleForWidth(
-      screenWidth,
-      baseWidth: 390,
-      minScale: 0.85,
-      maxScale: 1.35,
-    );
-    final horizontalPadding = Responsive.clamp(24 * scale, 16, 48);
-    final verticalPadding = Responsive.clamp(24 * scale, 16, 48);
-    final titleFontSize = Responsive.clamp(34 * scale, 26, 48);
-    final topSpacing = Responsive.clamp(36 * scale, 24, 64);
-    final betweenSpacing = Responsive.clamp(24 * scale, 18, 42);
-    final choiceSpacing = Responsive.clamp(16 * scale, 12, 28);
 
     return Scaffold(
       body: Stack(
@@ -180,81 +166,46 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
             child: Directionality(
               textDirection: TextDirection.rtl,
               child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: horizontalPadding,
-                  vertical: verticalPadding,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(height: topSpacing),
+                    const SizedBox(height: 36),
                     Text(
                       'اختر نوع الصورة',
                       textAlign: TextAlign.center,
                       style: textTheme.displaySmall?.copyWith(
-                        fontSize: titleFontSize,
+                        fontSize: 34,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: betweenSpacing),
+                    const SizedBox(height: 24),
                     Expanded(
                       child: Center(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final availableWidth = constraints.maxWidth;
-                            final imageWidth = Responsive.clamp(
-                              availableWidth * 0.72,
-                              Responsive.valueForWidth<double>(
-                                availableWidth,
-                                narrow: 260,
-                                wide: 320,
+                        child: Container(
+                          constraints: const BoxConstraints(maxWidth: 320, maxHeight: 240),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.25),
+                                blurRadius: 20,
+                                offset: const Offset(0, 14),
                               ),
-                              Responsive.valueForWidth<double>(
-                                availableWidth,
-                                narrow: 380,
-                                wide: 520,
-                                breakpoint: 900,
-                              ),
-                            );
-                            final imageHeight = Responsive.clamp(
-                              imageWidth * 0.75,
-                              220,
-                              Responsive.valueForWidth<double>(
-                                availableWidth,
-                                narrow: 360,
-                                wide: 420,
-                              ),
-                            );
-
-                            return Container(
-                              constraints: BoxConstraints(
-                                maxWidth: imageWidth,
-                                maxHeight: imageHeight,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(Responsive.clamp(28 * scale, 20, 42)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.25),
-                                    blurRadius: Responsive.clamp(20 * scale, 12, 28),
-                                    offset: const Offset(0, 14),
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(Responsive.clamp(28 * scale, 20, 42)),
-                                child: Image.asset(
-                                  _currentImage,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          },
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(28),
+                            child: Image.asset(
+                              _currentImage,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    SizedBox(height: betweenSpacing),
+                    const SizedBox(height: 24),
                     Row(
                       children: [
                         Expanded(
@@ -262,19 +213,17 @@ class _LevelOnePhotoScreenState extends State<LevelOnePhotoScreen> {
                             label: 'تشوه بصري',
                             backgroundColor: const Color(0xFFA66B55),
                             textColor: const Color(0xFFF7E7DC),
-                            scale: scale,
                             onPressed: _showFeedback
                                 ? null
                                 : () => _onAnswerSelected(PhotoCategory.visualPollution),
                           ),
                         ),
-                        SizedBox(width: choiceSpacing),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: _ChoiceButton(
                             label: 'منظر حضاري',
                             backgroundColor: const Color(0xFF1E6F5C),
                             textColor: const Color(0xFFEAF5EE),
-                            scale: scale,
                             onPressed: _showFeedback
                                 ? null
                                 : () => _onAnswerSelected(PhotoCategory.civilizedView),
@@ -350,143 +299,104 @@ class _AnswerFeedbackOverlay extends StatelessWidget {
         isCorrect ? (isLastQuestion ? 'إنهاء' : 'التالي') : 'حاول مجدداً';
 
     return Positioned.fill(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final overlayScale = Responsive.scaleForWidth(
-            constraints.maxWidth,
-            baseWidth: 390,
-            minScale: 0.85,
-            maxScale: 1.35,
-          );
-          final contentMaxWidth = Responsive.clamp(
-            constraints.maxWidth * 0.8,
-            320,
-            560,
-          );
-          final horizontalPadding = Responsive.clamp(24 * overlayScale, 16, 42);
-          final verticalPadding = Responsive.clamp(32 * overlayScale, 20, 54);
-          final borderRadius = Responsive.clamp(28 * overlayScale, 20, 40);
-          final iconSize = Responsive.clamp(48 * overlayScale, 38, 64);
-          final iconPadding = Responsive.clamp(12 * overlayScale, 8, 18);
-          final spacingSmall = Responsive.clamp(16 * overlayScale, 12, 24);
-          final spacingMedium = Responsive.clamp(18 * overlayScale, 14, 28);
-          final spacingLarge = Responsive.clamp(24 * overlayScale, 18, 34);
-          final imageHeight = Responsive.clamp(160 * overlayScale, 140, 260);
-          final descriptionFontSize = Responsive.clamp(20 * overlayScale, 16, 26);
-          final buttonFontSize = Responsive.clamp(20 * overlayScale, 16, 26);
-          final buttonPadding = Responsive.clamp(16 * overlayScale, 14, 22);
-          final buttonRadius = Responsive.clamp(22 * overlayScale, 18, 32);
-
-          return Container(
-            color: Colors.black.withOpacity(0.55),
-            child: Center(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: contentMaxWidth),
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(
-                      horizontalPadding,
-                      verticalPadding,
-                      horizontalPadding,
-                      Responsive.clamp(24 * overlayScale, 18, 32),
-                    ),
+      child: Container(
+        color: Colors.black.withOpacity(0.55),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: accentColor.withOpacity(0.3),
+                    blurRadius: 28,
+                    offset: const Offset(0, 18),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(borderRadius),
-                      boxShadow: [
-                        BoxShadow(
-                          color: accentColor.withOpacity(0.3),
-                          blurRadius: Responsive.clamp(28 * overlayScale, 18, 40),
-                          offset: const Offset(0, 18),
-                        ),
-                      ],
+                      color: accentColor.withOpacity(0.12),
+                      shape: BoxShape.circle,
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: accentColor.withOpacity(0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          padding: EdgeInsets.all(iconPadding),
-                          child: Icon(icon, color: accentColor, size: iconSize),
-                        ),
-                        SizedBox(height: spacingSmall),
-                        Text(
-                          title,
-                          style: textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: accentColor,
-                          ),
-                        ),
-                        SizedBox(height: spacingMedium),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              Responsive.clamp(22 * overlayScale, 18, 30)),
-                          child: Image.asset(
-                            question.assetPath,
-                            height: imageHeight,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: spacingMedium),
-                        Text(
-                          isCorrect
-                              ? question.description
-                              : 'فكّر مرة أخرى ولاحظ تفاصيل الصورة لتحديد الاختيار الصحيح.',
-                          textAlign: TextAlign.center,
-                          style: textTheme.titleMedium?.copyWith(
-                            fontSize: descriptionFontSize,
-                            height: 1.5,
-                            color: const Color(0xFF4A4A4A),
-                          ),
-                        ),
-                        SizedBox(height: spacingLarge),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: accentColor,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(buttonRadius),
-                              ),
-                              padding:
-                                  EdgeInsets.symmetric(vertical: buttonPadding),
-                              textStyle: textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                fontSize: buttonFontSize,
-                              ),
-                            ),
-                            onPressed: () {
-                              SoundEffects.playClaim();
-                              if (isCorrect) {
-                                if (isLastQuestion) {
-                                  Future<void>.delayed(
-                                    const Duration(milliseconds: 150),
-                                    SoundEffects.playCorrect,
-                                  );
-                                }
-                                onNext();
-                              } else {
-                                onTryAgain();
-                              }
-                            },
-                            child: Text(buttonLabel),
-                          ),
-                        ),
-                      ],
+                    padding: const EdgeInsets.all(12),
+                    child: Icon(icon, color: accentColor, size: 48),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    title,
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: accentColor,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 18),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(22),
+                    child: Image.asset(
+                      question.assetPath,
+                      height: 160,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    isCorrect
+                        ? question.description
+                        : 'فكّر مرة أخرى ولاحظ تفاصيل الصورة لتحديد الاختيار الصحيح.',
+                    textAlign: TextAlign.center,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontSize: 20,
+                      height: 1.5,
+                      color: const Color(0xFF4A4A4A),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accentColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        textStyle: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 20,
+                        ),
+                      ),
+                      onPressed: () {
+                        SoundEffects.playClaim();
+                        if (isCorrect) {
+                          if (isLastQuestion) {
+                            Future<void>.delayed(
+                              const Duration(milliseconds: 150),
+                              SoundEffects.playCorrect,
+                            );
+                          }
+                          onNext();
+                        } else {
+                          onTryAgain();
+                        }
+                      },
+                      child: Text(buttonLabel),
+                    ),
+                  ),
+                ],
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -498,78 +408,57 @@ class _ChoiceButton extends StatelessWidget {
     required this.backgroundColor,
     required this.onPressed,
     this.textColor = Colors.white,
-    this.scale = 1,
   });
 
   final String label;
   final Color backgroundColor;
   final Color textColor;
   final VoidCallback? onPressed;
-  final double scale;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final bool isEnabled = onPressed != null;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final widthScale = Responsive.scaleForWidth(
-          constraints.maxWidth,
-          baseWidth: 180,
-          minScale: 0.9,
-          maxScale: 1.2,
-        );
-        final combinedScale = Responsive.clamp(scale * widthScale, 0.9, 1.4);
-        final height = Responsive.clamp(64 * combinedScale, 52, 92);
-        final borderRadius = Responsive.clamp(18 * combinedScale, 14, 28);
-        final blurRadius = Responsive.clamp(18 * combinedScale, 12, 28);
-        final fontSize = Responsive.clamp(22 * combinedScale, 18, 30);
-
-        return SizedBox(
-          height: height,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color:
-                  isEnabled ? backgroundColor : backgroundColor.withOpacity(0.55),
-              borderRadius: BorderRadius.circular(borderRadius),
-              boxShadow: [
-                BoxShadow(
-                  color: backgroundColor.withOpacity(isEnabled ? 0.38 : 0.15),
-                  blurRadius: blurRadius,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+    return SizedBox(
+      height: 64,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: isEnabled ? backgroundColor : backgroundColor.withOpacity(0.55),
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: backgroundColor.withOpacity(isEnabled ? 0.38 : 0.15),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(borderRadius),
-                onTap: isEnabled
-                    ? () {
-                        SoundEffects.playClaim();
-                        onPressed!();
-                      }
-                    : null,
-                child: Center(
-                  child: Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    style: textTheme.titleMedium?.copyWith(
-                      fontSize: fontSize,
-                      fontWeight: FontWeight.w800,
-                      color: isEnabled
-                          ? textColor
-                          : textColor.withOpacity(0.7),
-                      height: 1.2,
-                    ),
-                  ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: isEnabled
+                ? () {
+                    SoundEffects.playClaim();
+                    onPressed!();
+                  }
+                : null,
+            child: Center(
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: textTheme.titleMedium?.copyWith(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: isEnabled ? textColor : textColor.withOpacity(0.7),
+                  height: 1.2,
                 ),
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
