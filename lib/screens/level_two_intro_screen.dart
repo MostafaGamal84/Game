@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../utils/responsive.dart';
@@ -13,35 +15,61 @@ class LevelTwoIntroScreen extends StatelessWidget {
         textTheme.displayLarge ?? textTheme.headlineLarge ?? const TextStyle(fontSize: 48);
 
     return Scaffold(
+      backgroundColor: Colors.black,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final maxWidth = constraints.maxWidth;
           final maxHeight = constraints.maxHeight;
-          final scale = Responsive.scaleForWidth(
+          final padding = MediaQuery.of(context).padding;
+          final availableHeight = math.max(0, maxHeight - padding.vertical);
+          final widthScale = Responsive.scaleForWidth(
             maxWidth,
             baseWidth: 390,
-            minScale: 0.88,
+            minScale: 0.9,
             maxScale: 1.55,
           );
-          final contentMaxWidth = Responsive.clamp(maxWidth * 0.9, 360, 680);
-          final contentHorizontalPadding = Responsive.clamp(24 * scale, 16, 48);
-          final contentVerticalPadding = Responsive.clamp(32 * scale, 24, 64);
-          final buttonHeight = Responsive.clamp(60 * scale, 52, 86);
-          final titleFontSize = Responsive.clamp(48 * scale, 36, 68);
-          final spacing = Responsive.clamp(24 * scale, 18, 44);
-          final buttonFontSize = Responsive.clamp(22 * scale, 18, 32);
-          final buttonRadius = Responsive.clamp(28 * scale, 22, 42);
-          final iconSize = Responsive.clamp(24 * scale, 22, 36);
-          final buttonShadowOpacity = Responsive.clamp(0.35 * scale, 0.2, 0.5);
+          final heightScale = Responsive.clamp(availableHeight / 780, 0.9, 1.2);
+          final scale = math.min(widthScale, heightScale);
+          final contentMaxWidth = Responsive.clamp(maxWidth * 0.68, 360, 620);
+          final contentHorizontalPadding = Responsive.clamp(28 * scale, 18, 56);
+          final contentVerticalPadding = Responsive.clamp(availableHeight * 0.08, 24, 72);
+          final buttonHeight = Responsive.clamp(60 * scale, 52, 84);
+          final titleFontSize = Responsive.clamp(48 * scale, 36, 66);
+          final spacing = Responsive.clamp(24 * scale, 18, 40);
+          final buttonFontSize = Responsive.clamp(22 * scale, 18, 30);
+          final buttonRadius = Responsive.clamp(28 * scale, 22, 40);
+          final iconSize = Responsive.clamp(26 * scale, 22, 38);
+          final buttonShadowOpacity = Responsive.clamp(0.32 * scale, 0.2, 0.45);
+
+          const bannerAspectRatio = 440 / 956;
+          final screenAspectRatio = maxWidth / maxHeight;
+          double bannerWidth;
+          double bannerHeight;
+          if (screenAspectRatio > bannerAspectRatio) {
+            bannerHeight = maxHeight;
+            bannerWidth = bannerHeight * bannerAspectRatio;
+          } else {
+            bannerWidth = maxWidth;
+            bannerHeight = bannerWidth / bannerAspectRatio;
+          }
+          final buttonMaxWidth = Responsive.clamp(contentMaxWidth * 0.65, 240, 460);
 
           return Stack(
             fit: StackFit.expand,
             children: [
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/banner.png',
-                  fit: BoxFit.cover,
-                  alignment: Alignment.center,
+              const Positioned.fill(
+                child: ColoredBox(color: Colors.black),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: bannerWidth,
+                  height: bannerHeight,
+                  child: Image.asset(
+                    'assets/images/banner.png',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
                 ),
               ),
               Positioned.fill(
@@ -49,8 +77,8 @@ class LevelTwoIntroScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.15),
-                        Colors.black.withOpacity(0.4),
+                        Colors.black.withOpacity(0.1),
+                        Colors.black.withOpacity(0.5),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -70,7 +98,9 @@ class LevelTwoIntroScreen extends StatelessWidget {
                       child: Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: contentHorizontalPadding,
-                          vertical: contentVerticalPadding,
+                        ).copyWith(
+                          top: contentVerticalPadding,
+                          bottom: contentVerticalPadding,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +137,7 @@ class LevelTwoIntroScreen extends StatelessWidget {
                               width: double.infinity,
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(
-                                  maxWidth: Responsive.clamp(contentMaxWidth * 0.7, 240, 480),
+                                  maxWidth: buttonMaxWidth,
                                 ),
                                 child: SizedBox(
                                   height: buttonHeight,
