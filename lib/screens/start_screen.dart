@@ -81,6 +81,7 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
           Image.asset(
             'assets/images/main.png',
             fit: BoxFit.cover,
+            alignment: Alignment.topCenter,
           ),
 
           // طبقة شفافة
