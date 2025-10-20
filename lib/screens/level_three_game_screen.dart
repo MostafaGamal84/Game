@@ -3,6 +3,7 @@ import 'dart:math'; // 👈 لعمل عشوائية
 
 import 'package:flutter/material.dart';
 
+import '../utils/responsive.dart';
 import '../utils/sound_effects.dart';
 import 'level_completion_screen.dart';
 
@@ -181,57 +182,107 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
             ),
           ),
           SafeArea(
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            SoundEffects.playClaim();
-                            Navigator.of(context).pop();
-                          },
-                          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                          color: Colors.white,
-                        ),
-                        Text(
-                          'المستوى 3',
-                          style: textTheme.titleMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final mediaQuery = MediaQuery.of(context);
+                final padding = Responsive.symmetricPadding(
+                  width,
+                  horizontal: 24,
+                  vertical: Responsive.scaledValue(
+                    width,
+                    16,
+                    min: 12,
+                    max: 32,
+                  ),
+                  maxContentWidth: Responsive.valueForWidth(
+                    width,
+                    narrow: 600,
+                    wide: 760,
+                    breakpoint: 900,
+                  ),
+                );
+                final sectionSpacing = Responsive.scaledValue(
+                  width,
+                  16,
+                  min: 12,
+                  max: 28,
+                );
+                final subtitleSpacing = Responsive.scaledValue(
+                  width,
+                  12,
+                  min: 10,
+                  max: 20,
+                );
+                final footerSpacing = Responsive.scaledValue(
+                  width,
+                  32,
+                  min: 20,
+                  max: 48,
+                );
+                final textScale = Responsive.scaleForWidth(
+                  width,
+                  baseWidth: 390,
+                  minScale: 0.95,
+                  maxScale: 1.2,
+                );
+
+                return MediaQuery(
+                  data: mediaQuery.copyWith(textScaleFactor: textScale),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Padding(
+                      padding: padding,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  SoundEffects.playClaim();
+                                  Navigator.of(context).pop();
+                                },
+                                icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                                color: Colors.white,
+                              ),
+                              Text(
+                                'المستوى 3',
+                                style: textTheme.titleMedium?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(width: 48),
+                            ],
                           ),
-                        ),
-                        const SizedBox(width: 48),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    if (_choiceState == _ChoiceState.initial) ...[
-                      Text(
-                        _currentScenario.title,
-                        style: textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                        ),
+                          SizedBox(height: sectionSpacing),
+                          if (_choiceState == _ChoiceState.initial) ...[
+                            Text(
+                              _currentScenario.title,
+                              style: textTheme.headlineSmall?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            SizedBox(height: subtitleSpacing),
+                          ],
+                          const Spacer(),
+                          _ChoicesBoard(
+                            scenario: _currentScenario,
+                            choiceState: _choiceState,
+                            onSelect: _handleSelect,
+                            onRetry: _handleRetry,
+                            correctOnLeft: _correctOnLeft,
+                          ),
+                          SizedBox(height: footerSpacing),
+                        ],
                       ),
-                      const SizedBox(height: 12),
-                    ],
-                    const Spacer(),
-                    _ChoicesBoard(
-                      scenario: _currentScenario,
-                      choiceState: _choiceState,
-                      onSelect: _handleSelect,
-                      onRetry: _handleRetry,
-                      correctOnLeft: _correctOnLeft, // 👈 نمرّر ترتيب الجهة
                     ),
-                    const SizedBox(height: 32),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -260,74 +311,128 @@ class _ChoicesBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    // ويدجت الصورة الصحيحة
-    final correctTile = Expanded(
-      child: _ChoiceTile(
-        assetPath: scenario.correctAsset,
-        type: _BehaviorOptionType.correct,
-        choiceState: choiceState,
-        isInteractive: choiceState == _ChoiceState.initial,
-        onTap: () => onSelect(_BehaviorOptionType.correct),
-      ),
-    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final containerPadding = EdgeInsets.all(
+          Responsive.scaledValue(
+            width,
+            24,
+            min: 16,
+            max: 36,
+          ),
+        );
+        final rowSpacing = Responsive.scaledValue(
+          width,
+          16,
+          min: 12,
+          max: 24,
+        );
+        final verticalSpacing = Responsive.scaledValue(
+          width,
+          24,
+          min: 16,
+          max: 32,
+        );
+        final tileHeight = Responsive.scaledValue(
+          width,
+          240,
+          min: 200,
+          max: 320,
+        );
+        final messagePadding = EdgeInsets.all(
+          Responsive.scaledValue(
+            width,
+            20,
+            min: 16,
+            max: 28,
+          ),
+        );
+        final messageSpacing = Responsive.scaledValue(
+          width,
+          20,
+          min: 16,
+          max: 28,
+        );
+        final retryPadding = Responsive.scaledValue(
+          width,
+          14,
+          min: 12,
+          max: 18,
+        );
 
-    // ويدجت الصورة الخطأ أو الرسالة بدلها
-    final wrongSide = Expanded(
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 250),
-        child: choiceState == _ChoiceState.initial
-            ? _ChoiceTile(
-                key: const ValueKey('wrong_choice'),
-                assetPath: scenario.wrongAsset,
-                type: _BehaviorOptionType.wrong,
-                choiceState: choiceState,
-                isInteractive: choiceState == _ChoiceState.initial,
-                onTap: () => onSelect(_BehaviorOptionType.wrong),
-              )
-            : _MessageCard(
-                key: ValueKey<_ChoiceState>(choiceState),
-                message: choiceState == _ChoiceState.correct
-                    ? scenario.correctMessage
-                    : scenario.wrongMessage,
-                isSuccess: choiceState == _ChoiceState.correct,
-                onRetry: choiceState == _ChoiceState.wrong ? onRetry : null,
+        final correctTile = Expanded(
+          child: _ChoiceTile(
+            assetPath: scenario.correctAsset,
+            type: _BehaviorOptionType.correct,
+            choiceState: choiceState,
+            isInteractive: choiceState == _ChoiceState.initial,
+            onTap: () => onSelect(_BehaviorOptionType.correct),
+            height: tileHeight,
+          ),
+        );
+
+        final wrongSide = Expanded(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: choiceState == _ChoiceState.initial
+                ? _ChoiceTile(
+                    key: const ValueKey('wrong_choice'),
+                    assetPath: scenario.wrongAsset,
+                    type: _BehaviorOptionType.wrong,
+                    choiceState: choiceState,
+                    isInteractive: choiceState == _ChoiceState.initial,
+                    onTap: () => onSelect(_BehaviorOptionType.wrong),
+                    height: tileHeight,
+                  )
+                : _MessageCard(
+                    key: ValueKey<_ChoiceState>(choiceState),
+                    message: choiceState == _ChoiceState.correct
+                        ? scenario.correctMessage
+                        : scenario.wrongMessage,
+                    isSuccess: choiceState == _ChoiceState.correct,
+                    onRetry: choiceState == _ChoiceState.wrong ? onRetry : null,
+                    padding: messagePadding,
+                    spacing: messageSpacing,
+                    buttonPadding: EdgeInsets.symmetric(vertical: retryPadding),
+                  ),
+          ),
+        );
+
+        final children = correctOnLeft
+            ? <Widget>[correctTile, SizedBox(width: rowSpacing), wrongSide]
+            : <Widget>[wrongSide, SizedBox(width: rowSpacing), correctTile];
+
+        return Container(
+          width: double.infinity,
+          padding: containerPadding,
+          decoration: BoxDecoration(
+            color: const Color(0xFF116A60).withOpacity(0.92),
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.20),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
               ),
-      ),
-    );
-
-    // رصّ الأعمدة حسب الجهة العشوائية
-    final children = correctOnLeft
-        ? <Widget>[correctTile, const SizedBox(width: 16), wrongSide]
-        : <Widget>[wrongSide, const SizedBox(width: 16), correctTile];
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: const Color(0xFF116A60).withOpacity(0.92),
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.20),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'أي صورة تمثل السلوك الصحيح؟',
-            style: textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'أي صورة تمثل السلوك الصحيح؟',
+                style: textTheme.titleMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(height: verticalSpacing),
+              Row(children: children),
+            ],
           ),
-          const SizedBox(height: 24),
-          Row(children: children),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -340,6 +445,7 @@ class _ChoiceTile extends StatelessWidget {
     required this.choiceState,
     required this.isInteractive,
     required this.onTap,
+    required this.height,
   });
 
   final String assetPath;
@@ -347,6 +453,7 @@ class _ChoiceTile extends StatelessWidget {
   final _ChoiceState choiceState;
   final bool isInteractive;
   final VoidCallback onTap;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -358,7 +465,7 @@ class _ChoiceTile extends StatelessWidget {
       onTap: isInteractive ? onTap : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        height: 240,
+        height: height,
         width: double.infinity,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -407,11 +514,17 @@ class _MessageCard extends StatelessWidget {
     required this.message,
     required this.isSuccess,
     this.onRetry,
+    required this.padding,
+    required this.spacing,
+    this.buttonPadding,
   });
 
   final String message;
   final bool isSuccess;
   final VoidCallback? onRetry;
+  final EdgeInsetsGeometry padding;
+  final double spacing;
+  final EdgeInsetsGeometry? buttonPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -419,7 +532,7 @@ class _MessageCard extends StatelessWidget {
     final Color accent = isSuccess ? const Color(0xFF00B894) : const Color(0xFFD63031);
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: padding,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -446,14 +559,15 @@ class _MessageCard extends StatelessWidget {
             textAlign: TextAlign.start,
           ),
           if (!isSuccess && onRetry != null) ...[
-            const SizedBox(height: 20),
+            SizedBox(height: spacing),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
                   foregroundColor: accent,
                   side: BorderSide(color: accent.withOpacity(0.5)),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: buttonPadding ??
+                      const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),

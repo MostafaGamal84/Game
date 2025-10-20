@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:said_alakhtha/screens/level_one_photo_screen.dart';
 
-
+import 'package:said_alakhtha/utils/responsive.dart';
 class LevelOneScreen extends StatelessWidget {
   const LevelOneScreen({super.key});
 
@@ -18,116 +18,185 @@ class LevelOneScreen extends StatelessWidget {
             fit: BoxFit.cover,
           ),
           SafeArea(
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 48),
-                    Text(
-                      'لعبة خمن الصورة',
-                      textAlign: TextAlign.center,
-                      style: textTheme.displayMedium?.copyWith(
-                        fontSize: 44,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        const spacing = 18.0;
-                        const minCardWidth = 140.0;
-                        const maxCardWidth = 194.0;
-                        final maxWidth = constraints.maxWidth;
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final mediaQuery = MediaQuery.of(context);
+                final padding = Responsive.symmetricPadding(
+                  width,
+                  horizontal: 24,
+                  vertical: Responsive.scaledValue(
+                    width,
+                    32,
+                    min: 20,
+                    max: 56,
+                  ),
+                  maxContentWidth: Responsive.valueForWidth(
+                    width,
+                    narrow: 560,
+                    wide: 720,
+                    breakpoint: 900,
+                  ),
+                );
+                final topSpacing = Responsive.scaledValue(
+                  width,
+                  48,
+                  min: 28,
+                  max: 72,
+                );
+                final betweenSpacing = Responsive.scaledValue(
+                  width,
+                  32,
+                  min: 24,
+                  max: 48,
+                );
+                final footerSpacing = Responsive.scaledValue(
+                  width,
+                  28,
+                  min: 20,
+                  max: 40,
+                );
+                final buttonWidth = Responsive.scaledValue(
+                  width,
+                  220,
+                  min: 200,
+                  max: 320,
+                );
+                final buttonHeight = Responsive.scaledValue(
+                  width,
+                  60,
+                  min: 56,
+                  max: 78,
+                );
+                final textScale = Responsive.scaleForWidth(
+                  width,
+                  baseWidth: 390,
+                  minScale: 0.95,
+                  maxScale: 1.2,
+                );
 
-                        double cardWidth;
-                        bool useRowLayout = true;
+                return MediaQuery(
+                  data: mediaQuery.copyWith(textScaleFactor: textScale),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Padding(
+                      padding: padding,
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 720),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(height: topSpacing),
+                                Text(
+                                  'لعبة خمن الصورة',
+                                  textAlign: TextAlign.center,
+                                  style: textTheme.displayMedium?.copyWith(
+                                    fontSize: 44,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                    height: 1.2,
+                                  ),
+                                ),
+                                SizedBox(height: betweenSpacing),
+                                LayoutBuilder(
+                                  builder: (context, innerConstraints) {
+                                    const spacing = 18.0;
+                                    const minCardWidth = 140.0;
+                                    const maxCardWidth = 194.0;
+                                    final maxWidth = innerConstraints.maxWidth;
 
-                        if (maxWidth >= (maxCardWidth * 2) + spacing) {
-                          cardWidth = maxCardWidth;
-                        } else if (maxWidth >= (minCardWidth * 2) + spacing) {
-                          cardWidth = (maxWidth - spacing) / 2;
-                        } else {
-                          cardWidth = maxWidth;
-                          useRowLayout = false;
-                        }
+                                    double cardWidth;
+                                    bool useRowLayout = true;
 
-                        if (useRowLayout) {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _LevelChoiceCard(
-                                title: 'منظر حضاري',
-                                backgroundImage: 'assets/images/true.png',
-                                width: cardWidth,
-                              ),
-                              const SizedBox(width: spacing),
-                              _LevelChoiceCard(
-                                title: 'تشوه بصري',
-                                backgroundImage: 'assets/images/false.png',
-                                width: cardWidth,
-                              ),
-                            ],
-                          );
-                        }
+                                    if (maxWidth >= (maxCardWidth * 2) + spacing) {
+                                      cardWidth = maxCardWidth;
+                                    } else if (maxWidth >= (minCardWidth * 2) + spacing) {
+                                      cardWidth = (maxWidth - spacing) / 2;
+                                    } else {
+                                      cardWidth = maxWidth;
+                                      useRowLayout = false;
+                                    }
 
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _LevelChoiceCard(
-                              title: 'منظر حضاري',
-                              backgroundImage: 'assets/images/true.png',
-                              width: cardWidth,
+                                    if (useRowLayout) {
+                                      return Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          _LevelChoiceCard(
+                                            title: 'منظر حضاري',
+                                            backgroundImage: 'assets/images/true.png',
+                                            width: cardWidth,
+                                          ),
+                                          const SizedBox(width: spacing),
+                                          _LevelChoiceCard(
+                                            title: 'تشوه بصري',
+                                            backgroundImage: 'assets/images/false.png',
+                                            width: cardWidth,
+                                          ),
+                                        ],
+                                      );
+                                    }
+
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        _LevelChoiceCard(
+                                          title: 'منظر حضاري',
+                                          backgroundImage: 'assets/images/true.png',
+                                          width: cardWidth,
+                                        ),
+                                        const SizedBox(height: spacing),
+                                        _LevelChoiceCard(
+                                          title: 'تشوه بصري',
+                                          backgroundImage: 'assets/images/false.png',
+                                          width: cardWidth,
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                SizedBox(height: footerSpacing),
+                                SizedBox(
+                                  width: buttonWidth,
+                                  height: buttonHeight,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF1E6F5C),
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(28),
+                                      ),
+                                      elevation: 6,
+                                      shadowColor:
+                                          const Color(0xFF1E6F5C).withOpacity(0.35),
+                                      textStyle: textTheme.titleMedium?.copyWith(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LevelOnePhotoScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text('ابدأ اللعب'),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: spacing),
-                            _LevelChoiceCard(
-                              title: 'تشوه بصري',
-                              backgroundImage: 'assets/images/false.png',
-                              width: cardWidth,
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 28),
-
-                    // ✅ زرار "ابدأ اللعب" بنفس حجم باقي الأزرار
-                    SizedBox(
-                      width: 220,
-                      height: 60,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1E6F5C),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                          elevation: 6,
-                          shadowColor: const Color(0xFF1E6F5C).withOpacity(0.35),
-                          textStyle: textTheme.titleMedium?.copyWith(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
                           ),
                         ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const LevelOnePhotoScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text('ابدأ اللعب'),
                       ),
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ],
