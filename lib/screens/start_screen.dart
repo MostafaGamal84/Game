@@ -34,7 +34,6 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (!_audioInitialized) return;
-
     switch (state) {
       case AppLifecycleState.resumed:
         unawaited(_audioPlayer.resume());
@@ -61,123 +60,113 @@ class _StartScreenState extends State<StartScreen> with WidgetsBindingObserver {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // خلفية الشاشة
-          Image.asset(
-            'assets/images/main.png',
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-          ),
+      backgroundColor: const Color(0xFFEFEFEF), // background similar to image edges
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final mq = MediaQuery.of(context);
+          final size = mq.size;
+          final width = constraints.maxWidth;
+          final isTablet = size.shortestSide >= 600;
 
-          // طبقة شفافة
-          Container(
-            color: Colors.black.withOpacity(0.25),
-          ),
+          // Responsive paddings
+          final horizontalPadding = Responsive.horizontalPadding(
+            width,
+            maxContentWidth: isTablet ? 740 : 520,
+          );
+          final bottomPadding = Responsive.scaledValue(
+            width,
+            isTablet ? 80 : 60,
+            min: 40,
+            max: isTablet ? 140 : 110,
+          );
+          final buttonWidth = Responsive.scaledValue(
+            width,
+            isTablet ? 320 : 220,
+            min: isTablet ? 260 : 200,
+            max: isTablet ? 420 : 320,
+          );
 
-          // زر "ابدأ اللعب"
-          SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final width = constraints.maxWidth;
-                final mediaQuery = MediaQuery.of(context);
-                final horizontalPadding = Responsive.horizontalPadding(
-                  width,
-                  maxContentWidth: 520,
-                );
-                final topPadding = Responsive.scaledValue(
-                  width,
-                  32,
-                  min: 20,
-                  max: 72,
-                );
-                final bottomPadding = Responsive.scaledValue(
-                  width,
-                  60,
-                  min: 40,
-                  max: 110,
-                );
-                final buttonWidth = Responsive.scaledValue(
-                  width,
-                  220,
-                  min: 200,
-                  max: 320,
-                );
-                final textScale = Responsive.scaleForWidth(
-                  width,
-                  baseWidth: 390,
-                  minScale: 0.95,
-                  maxScale: 1.25,
-                );
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              /// ✅ Background image - scaled to always fit vertically and show FULL content
+              Center(
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: SizedBox(
+                    height: constraints.maxHeight, // scale based on height
+                    child: Image.asset(
+                      'assets/images/main.png',
+                      fit: BoxFit.contain,
+                      alignment: Alignment.center,
+                    ),
+                  ),
+                ),
+              ),
 
-                return MediaQuery(
-                  data: mediaQuery.copyWith(textScaleFactor: textScale),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        horizontalPadding,
-                        topPadding,
-                        horizontalPadding,
-                        bottomPadding,
-                      ),
-                      child: Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: SizedBox(
-                          width: buttonWidth,
-                          child: ElevatedButton.icon(
-                            icon: const Icon(
-                              Icons.play_arrow_rounded,
-                              size: 30,
+              /// ✅ Optional dark overlay to make button visible
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.08),
+                ),
+              ),
+
+              /// ✅ Bottom button
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: horizontalPadding,
+                      right: horizontalPadding,
+                      bottom: bottomPadding,
+                    ),
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: buttonWidth),
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.play_arrow_rounded, size: 30),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1E6F5C),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1E6F5C),
-                              foregroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(
-                                vertical: Responsive.scaledValue(
-                                  width,
-                                  12,
-                                  min: 12,
-                                  max: 18,
-                                ),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(28),
-                              ),
-                              textStyle: textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
+                            textStyle: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              fontSize: isTablet ? 22 : 20,
+                              color: Colors.white,
                             ),
-                            onPressed: () {
-                              _audioPlayer.setVolume(0.35);
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const LevelSelectionScreen(),
-                                ),
-                              ).then((_) {
-                                if (!mounted) {
-                                  return;
-                                }
-                                _audioPlayer.setVolume(1.0);
-                              });
-                            },
-                            label: const Padding(
-                              padding: EdgeInsets.only(right: 8.0),
-                              child: Text('ابدا اللعب'),
-                            ),
+                            elevation: 6,
+                          ),
+                          onPressed: () {
+                            _audioPlayer.setVolume(0.35);
+                            Navigator.of(context)
+                                .push(
+                              MaterialPageRoute(
+                                builder: (_) => const LevelSelectionScreen(),
+                              ),
+                            )
+                                .then((_) {
+                              if (!mounted) return;
+                              _audioPlayer.setVolume(1.0);
+                            });
+                          },
+                          label: const Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: Text('ابدأ اللعب'),
                           ),
                         ),
                       ),
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-        ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

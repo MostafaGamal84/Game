@@ -87,18 +87,18 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
   _ViolationSpot? _activeSpot;
   bool _lastTapWasNew = false;
 
-  // مرحلة اللمعات المتتابعة (بدون Glare لكل عنصر)
+  // Flashes sequence
   late final AnimationController _flashCtrl; // 0→1
   bool _playFinish = false;
 
-  // الصورة النهائية + glare عام
+  // Final layer + full-screen glare
   late final AnimationController _finalCtrl; // 0→1
   late final Animation<double> _finalFade;
   late final Animation<double> _fullGlare;
 
   bool _showFinalLayer = false;
 
-  // نبضة العداد
+  // Counter pulse
   double _counterPulse = 1.0;
 
   @override
@@ -110,7 +110,6 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
       duration: const Duration(milliseconds: 1400),
     )..addStatusListener((s) async {
         if (s == AnimationStatus.completed && mounted) {
-          // بعد اللمعات: فعّل طبقة الصورة النهائية وابدأ الـ glare العام + صوت النهاية
           setState(() => _showFinalLayer = true);
           SoundEffects.playCorrect();
           _finalCtrl.forward(from: 0);
@@ -123,7 +122,6 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
     );
     _finalFade = CurvedAnimation(parent: _finalCtrl, curve: Curves.easeInOut);
     _fullGlare = CurvedAnimation(parent: _finalCtrl, curve: Curves.easeOutCubic);
-
   }
 
   @override
@@ -166,7 +164,6 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
         _playFinish = true;
         _showFinalLayer = false;
       });
-      // ابدأ لمعات العناصر (بدون Glare، مجرد flash)
       _flashCtrl.forward(from: 0);
     }
   }
@@ -187,12 +184,26 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final screenSize = MediaQuery.of(context).size;
+    final screenScale = Responsive.scaleForWidth(
+      screenSize.width,
+      baseWidth: 390,
+      minScale: 0.85,
+      maxScale: 1.35,
+    );
+    final bottomPadding = Responsive.clamp(20 * screenScale, 16, 40);
+    final bottomHorizontalPadding = Responsive.clamp(20 * screenScale, 16, 48);
+    final bottomButtonWidth = Responsive.clamp(screenSize.width * 0.6, 240, 520);
+    final bottomButtonPadding = Responsive.clamp(14 * screenScale, 12, 22);
+    final bottomButtonRadius = Responsive.clamp(18 * screenScale, 16, 30);
+    final bottomButtonFontSize = Responsive.clamp(20 * screenScale, 16, 28);
 
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // الخلفية + التفاعل
+          // الخلفية + التفاعل + (اللمعات عند النهاية) — كله داخل نفس mapping
           IgnorePointer(
             ignoring: _playFinish,
             child: _LevelTwoScene(
@@ -201,21 +212,11 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
               onSpotTap: _handleSpotTap,
               designMode: kDesignMode,
               onNewRect: _onNewRectFromDesign,
+              flashProgress: _playFinish ? _flashCtrl : null, // 👈 اللمعات جوّه المشهد
             ),
           ),
 
-          // لمعات العناصر المتتابعة (flash فقط)
-          if (_playFinish)
-            Positioned.fill(
-              child: _SequentialSpotFlashes(
-                progress: _flashCtrl,
-                spots: _spots,
-                designWidth: _LevelTwoScene.designWidth,
-                designHeight: _LevelTwoScene.designHeight,
-              ),
-            ),
-
-          // الصورة النهائية + glare عام واحد
+          // الصورة النهائية + glare عام واحد (ممكن تبقى fullscreen)
           if (_showFinalLayer)
             Positioned.fill(
               child: AnimatedBuilder(
@@ -239,7 +240,12 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
             ),
 
           // HUD أعلى الشاشة
-          if (!_playFinish) const _TopHud(),
+          if (!_playFinish)
+            _TopHud(
+              foundCount: _foundCount,
+              totalCount: _totalCount,
+              counterPulse: _counterPulse,
+            ),
 
           // كارت الشرح
           if (_activeSpot != null)
@@ -252,65 +258,38 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
           // متابعة بعد النهاية
           if (_showFinalLayer)
             SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final width = constraints.maxWidth;
-                  final padding = EdgeInsets.fromLTRB(
-                    Responsive.horizontalPadding(
-                      width,
-                      minPadding: 20,
-                      maxContentWidth: 600,
-                    ),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    bottomHorizontalPadding,
                     0,
-                    Responsive.horizontalPadding(
-                      width,
-                      minPadding: 20,
-                      maxContentWidth: 600,
-                    ),
-                    Responsive.scaledValue(
-                      width,
-                      20,
-                      min: 16,
-                      max: 36,
-                    ),
-                  );
-                  final buttonPadding = EdgeInsets.symmetric(
-                    vertical: Responsive.scaledValue(
-                      width,
-                      14,
-                      min: 12,
-                      max: 18,
-                    ),
-                  );
-
-                  return Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: padding,
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1E6F5C),
-                            foregroundColor: Colors.white,
-                            padding: buttonPadding,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                          ),
-                          onPressed: _goToCompletion,
-                          child: Text(
-                            'متابعة',
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
+                    bottomHorizontalPadding,
+                    bottomPadding,
+                  ),
+                  child: SizedBox(
+                    width: bottomButtonWidth,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1E6F5C),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: bottomButtonPadding),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(bottomButtonRadius),
+                        ),
+                      ),
+                      onPressed: _goToCompletion,
+                      child: Text(
+                        'متابعة',
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          fontSize: bottomButtonFontSize,
                         ),
                       ),
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
         ],
@@ -320,18 +299,35 @@ class _LevelTwoGameScreenState extends State<LevelTwoGameScreen>
 }
 
 /// HUD مثبت أعلى الشاشة
-class _TopHud extends StatefulWidget {
-  const _TopHud({super.key});
+class _TopHud extends StatelessWidget {
+  const _TopHud({
+    super.key,
+    required this.foundCount,
+    required this.totalCount,
+    required this.counterPulse,
+  });
 
-  @override
-  State<_TopHud> createState() => _TopHudState();
-}
+  final int foundCount;
+  final int totalCount;
+  final double counterPulse;
 
-class _TopHudState extends State<_TopHud> {
   @override
   Widget build(BuildContext context) {
-    final state = context.findAncestorStateOfType<_LevelTwoGameScreenState>()!;
     final textTheme = Theme.of(context).textTheme;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final scale = Responsive.scaleForWidth(
+      screenWidth,
+      baseWidth: 390,
+      minScale: 0.85,
+      maxScale: 1.3,
+    );
+    final horizontalPadding = Responsive.clamp(12 * scale, 8, 20);
+    final verticalPadding = Responsive.clamp(8 * scale, 6, 16);
+    final iconSize = Responsive.clamp(24 * scale, 20, 32);
+    final titleFontSize = Responsive.clamp(18 * scale, 14, 24);
+    final counterPaddingH = Responsive.clamp(18 * scale, 12, 28);
+    final counterPaddingV = Responsive.clamp(8 * scale, 6, 14);
+    final counterFontSize = Responsive.clamp(20 * scale, 16, 28);
 
     return Positioned(
       top: 0,
@@ -339,28 +335,13 @@ class _TopHudState extends State<_TopHud> {
       right: 0,
       child: SafeArea(
         bottom: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final width = constraints.maxWidth;
-            final horizontalPadding = Responsive.horizontalPadding(
-              width,
-              minPadding: 12,
-              maxContentWidth: 720,
-            );
-            final topPadding = Responsive.scaledValue(
-              width,
-              8,
-              min: 6,
-              max: 14,
-            );
-
-            return Padding(
-              padding: EdgeInsets.only(
-                top: topPadding,
-                left: horizontalPadding,
-                right: horizontalPadding,
-              ),
-              child: Stack(
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: verticalPadding,
+            left: horizontalPadding,
+            right: horizontalPadding,
+          ),
+          child: Stack(
             alignment: Alignment.center,
             children: [
               Align(
@@ -374,9 +355,13 @@ class _TopHudState extends State<_TopHud> {
                       SoundEffects.playClaim();
                       Navigator.of(context).pop();
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                    child: Padding(
+                      padding: EdgeInsets.all(Responsive.clamp(10 * scale, 8, 14)),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: iconSize,
+                      ),
                     ),
                   ),
                 ),
@@ -391,9 +376,13 @@ class _TopHudState extends State<_TopHud> {
                     onTap: () {
                       SoundEffects.playClaim();
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Icon(Icons.person, color: Colors.white),
+                    child: Padding(
+                      padding: EdgeInsets.all(Responsive.clamp(10 * scale, 8, 14)),
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.white,
+                        size: iconSize,
+                      ),
                     ),
                   ),
                 ),
@@ -406,31 +395,36 @@ class _TopHudState extends State<_TopHud> {
                     style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
+                      fontSize: titleFontSize,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: Responsive.clamp(6 * scale, 4, 10)),
                   AnimatedScale(
                     duration: const Duration(milliseconds: 180),
-                    scale: context.findAncestorStateOfType<_LevelTwoGameScreenState>()!._counterPulse,
+                    scale: counterPulse,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: counterPaddingH,
+                        vertical: counterPaddingV,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF00695C),
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.18),
-                            blurRadius: 10,
+                            blurRadius: Responsive.clamp(10 * scale, 6, 16),
                             offset: const Offset(0, 4),
                           ),
                         ],
                       ),
                       child: Text(
-                        '${state._foundCount} / ${state._totalCount}',
+                        '$foundCount / $totalCount',
                         style: textTheme.titleLarge?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 2,
+                          letterSpacing: Responsive.clamp(2 * scale, 1, 3),
+                          fontSize: counterFontSize,
                         ),
                       ),
                     ),
@@ -439,15 +433,13 @@ class _TopHudState extends State<_TopHud> {
               ),
             ],
           ),
-            );
-          },
         ),
       ),
     );
   }
 }
 
-// ====== مشهد المستوى (الخلفية + أماكن اللمس) ======
+// ====== مشهد المستوى (الخلفية + أماكن اللمس + اللمعات) ======
 class _LevelTwoScene extends StatefulWidget {
   const _LevelTwoScene({
     required this.spots,
@@ -455,6 +447,7 @@ class _LevelTwoScene extends StatefulWidget {
     required this.onSpotTap,
     required this.designMode,
     required this.onNewRect,
+    this.flashProgress, // 👈 لإظهار اللمعات في النهاية
   });
 
   final List<_ViolationSpot> spots;
@@ -462,7 +455,9 @@ class _LevelTwoScene extends StatefulWidget {
   final ValueChanged<_ViolationSpot> onSpotTap;
   final bool designMode;
   final ValueChanged<Rect> onNewRect;
+  final Animation<double>? flashProgress;
 
+  // أبعاد التصميم المرجعية (نفس نسبة خلفية levelTwoBackground.jpg)
   static const double designWidth = 440;
   static const double designHeight = 956;
 
@@ -475,36 +470,60 @@ class _LevelTwoSceneState extends State<_LevelTwoScene> {
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.cover,
-      alignment: Alignment.topCenter,
-      clipBehavior: Clip.hardEdge,
-      child: SizedBox(
-        width: _LevelTwoScene.designWidth,
-        height: _LevelTwoScene.designHeight,
-        child: Stack(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final containerSize = Size(constraints.maxWidth, constraints.maxHeight);
+        const designSize = Size(_LevelTwoScene.designWidth, _LevelTwoScene.designHeight);
+
+        // احسب الـ destRect للصورة داخل الحاوية بنفس منطق BoxFit.contain
+        final fitted = applyBoxFit(BoxFit.contain, designSize, containerSize);
+        final dest = Size(fitted.destination.width, fitted.destination.height);
+        final dx = (containerSize.width - dest.width) / 2.0;
+        final dy = (containerSize.height - dest.height) / 2.0;
+        final destRect = Rect.fromLTWH(dx, dy, dest.width, dest.height);
+
+        // عوامل التحويل من design-space إلى destRect
+        final sx = dest.width / designSize.width;
+        final sy = dest.height / designSize.height;
+
+        Rect mapRect(Rect r) => Rect.fromLTWH(
+              destRect.left + r.left * sx,
+              destRect.top + r.top * sy,
+              r.width * sx,
+              r.height * sy,
+            );
+
+        return Stack(
           children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/LevelTwo/levelTwoBackground.jpg',
-                fit: BoxFit.cover,
+            // الخلفية داخل destRect بدقة 1:1 مع نظام الإحداثيات
+            Positioned.fromRect(
+              rect: destRect,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(
+                  Responsive.clamp(12 * math.min(sx, sy), 0, 18),
+                ),
+                child: Image.asset(
+                  'assets/images/LevelTwo/levelTwoBackground.jpg',
+                  fit: BoxFit.fill, // إحنا بالفعل معطينها الحجم النهائي
+                ),
               ),
             ),
 
-            // أماكن اللمس (غير مرئية)
+            // أماكن اللمس (غير مرئية) — كلها تتحول بـ mapRect
             ...widget.spots.map((spot) {
-              final rect = Rect.fromLTWH(
+              final rectInDesign = Rect.fromLTWH(
                 spot.area.left * _LevelTwoScene.designWidth,
                 spot.area.top * _LevelTwoScene.designHeight,
                 spot.area.width * _LevelTwoScene.designWidth,
                 spot.area.height * _LevelTwoScene.designHeight,
               );
+              final rectOnScreen = mapRect(rectInDesign);
               final isFound = widget.found.contains(spot.id);
               return Positioned(
-                left: rect.left,
-                top: rect.top,
-                width: rect.width,
-                height: rect.height,
+                left: rectOnScreen.left,
+                top: rectOnScreen.top,
+                width: rectOnScreen.width,
+                height: rectOnScreen.height,
                 child: _ViolationHitBox(
                   isFound: isFound,
                   onTap: () => widget.onSpotTap(spot),
@@ -512,9 +531,10 @@ class _LevelTwoSceneState extends State<_LevelTwoScene> {
               );
             }),
 
-            // وضع التصميم الاختياري: رسم مستطيل وأخذ النِسَب
+            // وضع التصميم الاختياري: رسم مستطيل وأخذ النِسَب — داخل نفس destRect
             if (widget.designMode)
-              Positioned.fill(
+              Positioned.fromRect(
+                rect: destRect,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onPanStart: (d) {
@@ -535,23 +555,55 @@ class _LevelTwoSceneState extends State<_LevelTwoScene> {
                     if (_draftRect == null) return;
                     final r = _draftRect!;
                     setState(() => _draftRect = null);
+                    // رجّع النِّسَب الطبيعية (0..1) بالنسبة للتصميم
                     final normalized = Rect.fromLTWH(
-                      (r.left / _LevelTwoScene.designWidth).clamp(0.0, 1.0),
-                      (r.top / _LevelTwoScene.designHeight).clamp(0.0, 1.0),
-                      (r.width / _LevelTwoScene.designWidth).clamp(0.0, 1.0),
-                      (r.height / _LevelTwoScene.designHeight).clamp(0.0, 1.0),
+                      (r.left / destRect.width).clamp(0.0, 1.0),
+                      (r.top / destRect.height).clamp(0.0, 1.0),
+                      (r.width / destRect.width).clamp(0.0, 1.0),
+                      (r.height / destRect.height).clamp(0.0, 1.0),
                     );
-                    widget.onNewRect(normalized);
+                    // حوّلها لمساحة التصميم 440x956
+                    final designRect = Rect.fromLTWH(
+                      normalized.left * _LevelTwoScene.designWidth,
+                      normalized.top * _LevelTwoScene.designHeight,
+                      normalized.width * _LevelTwoScene.designWidth,
+                      normalized.height * _LevelTwoScene.designHeight,
+                    );
+                    widget.onNewRect(designRect);
                   },
                   child: IgnorePointer(
                     ignoring: true,
-                    child: CustomPaint(painter: _DraftRectPainter(_draftRect)),
+                    child: CustomPaint(
+                      painter: _DraftRectPainter(
+                        _draftRect != null
+                            ? Rect.fromLTWH(
+                                destRect.left + _draftRect!.left,
+                                destRect.top + _draftRect!.top,
+                                _draftRect!.width,
+                                _draftRect!.height,
+                              )
+                            : null,
+                      ),
+                    ),
                   ),
                 ),
               ),
+
+            // 🔥 اللمعات (flashes) داخل نفس destRect لضمان التطابق
+            if (widget.flashProgress != null)
+              Positioned.fromRect(
+                rect: destRect,
+                child: _SequentialSpotFlashesAligned(
+                  progress: widget.flashProgress!,
+                  spots: widget.spots,
+                  designSize: designSize,
+                  scaleX: sx,
+                  scaleY: sy,
+                ),
+              ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -635,6 +687,13 @@ class _ViolationInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final scale = Responsive.scaleForWidth(
+      screenWidth,
+      baseWidth: 390,
+      minScale: 0.85,
+      maxScale: 1.3,
+    );
 
     const double cardOpacity = 0.35;
     const double blurSigma = 16;
@@ -643,203 +702,178 @@ class _ViolationInfoCard extends StatelessWidget {
       left: 0,
       right: 0,
       bottom: 0,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth;
-          final mediaQuery = MediaQuery.of(context);
-          final safeMinimum = Responsive.symmetricPadding(
-            width,
-            horizontal: 20,
-            vertical: Responsive.scaledValue(
-              width,
-              16,
-              min: 12,
-              max: 28,
-            ),
-            maxContentWidth: Responsive.valueForWidth(
-              width,
-              narrow: 560,
-              wide: 720,
-              breakpoint: 900,
-            ),
-          );
-          final contentHorizontal = Responsive.horizontalPadding(
-            width,
-            minPadding: 20,
-            maxContentWidth: 600,
-          );
-          final topPadding = Responsive.scaledValue(
-            width,
-            20,
-            min: 16,
-            max: 28,
-          );
-          final bottomPadding = Responsive.scaledValue(
-            width,
-            16,
-            min: 12,
-            max: 24,
-          );
-          final textScale = Responsive.scaleForWidth(
-            width,
-            baseWidth: 390,
-            minScale: 0.95,
-            maxScale: 1.2,
-          );
-
-          return SafeArea(
-            minimum: safeMinimum,
-            child: MediaQuery(
-              data: mediaQuery.copyWith(textScaleFactor: textScale),
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 720),
-                    child: Dismissible(
-                      key: ValueKey(spot.id),
-                      direction: DismissDirection.down,
-                      onDismissed: (_) => onDismiss(),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(
-                              contentHorizontal,
-                              topPadding,
-                              contentHorizontal,
-                              bottomPadding,
+      child: SafeArea(
+        minimum: EdgeInsets.symmetric(
+          horizontal: Responsive.clamp(20 * scale, 14, 36),
+          vertical: Responsive.clamp(16 * scale, 12, 28),
+        ),
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Dismissible(
+            key: ValueKey(spot.id),
+            direction: DismissDirection.down,
+            onDismissed: (_) => onDismiss(),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(Responsive.clamp(24 * scale, 18, 36)),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(
+                    Responsive.clamp(20 * scale, 16, 32),
+                    Responsive.clamp(20 * scale, 16, 32),
+                    Responsive.clamp(20 * scale, 16, 32),
+                    Responsive.clamp(16 * scale, 12, 28),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(cardOpacity),
+                    borderRadius: BorderRadius.circular(Responsive.clamp(24 * scale, 18, 36)),
+                    border: Border.all(color: Colors.white.withOpacity(0.45)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.10),
+                        blurRadius: Responsive.clamp(14 * scale, 10, 22),
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: onDismiss,
+                            icon: Icon(
+                              Icons.close_rounded,
+                              size: Responsive.clamp(24 * scale, 20, 32),
                             ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(cardOpacity),
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: Colors.white.withOpacity(0.45)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.10),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
-                            ),
+                            color: const Color(0xFF2F2F2F),
+                          ),
+                          SizedBox(width: Responsive.clamp(8 * scale, 6, 14)),
+                          Expanded(
                             child: Column(
-                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      onPressed: onDismiss,
-                                      icon: const Icon(Icons.close_rounded),
-                                      color: const Color(0xFF2F2F2F),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            spot.title,
-                                            style: textTheme.titleLarge?.copyWith(
-                                              fontWeight: FontWeight.w800,
-                                              color: const Color(0xFF1E6F5C),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            isFirstTime
-                                                ? 'أحسنت! لقد اكتشفت تشوهاً بصرياً.'
-                                                : 'هذا شرح العنصر الذي اخترته.',
-                                            style: textTheme.bodyMedium?.copyWith(
-                                              color: const Color(0xFF3F3F3F),
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF1E6F5C).withOpacity(0.12),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      padding: const EdgeInsets.all(10),
-                                      child: const Icon(
-                                        Icons.check_circle_outline,
-                                        color: Color(0xFF1E6F5C),
-                                        size: 26,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
                                 Text(
-                                  spot.description,
-                                  style: textTheme.bodyLarge?.copyWith(
-                                    height: 1.6,
-                                    color: const Color(0xFF2B2B2B),
-                                    fontWeight: FontWeight.w600,
+                                  spot.title,
+                                  style: textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFF1E6F5C),
+                                    fontSize:
+                                        Responsive.clamp((textTheme.titleLarge?.fontSize ?? 24) * scale, 18, 30),
                                   ),
                                 ),
-                                const SizedBox(height: 14),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF1E6F5C),
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(vertical: 14),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(18),
-                                      ),
-                                    ),
-                                    onPressed: onDismiss,
-                                    child: Text(
-                                      isFirstTime ? 'تابع البحث' : 'إغلاق',
-                                      style: textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.white,
-                                      ),
+                                SizedBox(height: Responsive.clamp(4 * scale, 2, 8)),
+                                Text(
+                                  isFirstTime
+                                      ? 'أحسنت! لقد اكتشفت تشوهاً بصرياً.'
+                                      : 'هذا شرح العنصر الذي اخترته.',
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: const Color(0xFF3F3F3F),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: Responsive.clamp(
+                                      (textTheme.bodyMedium?.fontSize ?? 16) * scale,
+                                      14,
+                                      22,
                                     ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          SizedBox(width: Responsive.clamp(8 * scale, 6, 14)),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1E6F5C).withOpacity(0.12),
+                              shape: BoxShape.circle,
+                            ),
+                            padding: EdgeInsets.all(Responsive.clamp(10 * scale, 8, 16)),
+                            child: Icon(
+                              Icons.check_circle_outline,
+                              color: Color(0xFF1E6F5C),
+                              size: Responsive.clamp(26 * scale, 20, 34),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: Responsive.clamp(12 * scale, 8, 20)),
+                      Text(
+                        spot.description,
+                        style: textTheme.bodyLarge?.copyWith(
+                          height: 1.6,
+                          color: const Color(0xFF2B2B2B),
+                          fontWeight: FontWeight.w600,
+                          fontSize: Responsive.clamp(
+                            (textTheme.bodyLarge?.fontSize ?? 18) * scale,
+                            16,
+                            26,
+                          ),
                         ),
                       ),
-                    ),
+                      SizedBox(height: Responsive.clamp(14 * scale, 10, 22)),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1E6F5C),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              vertical: Responsive.clamp(14 * scale, 12, 22),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                Responsive.clamp(18 * scale, 14, 28),
+                              ),
+                            ),
+                          ),
+                          onPressed: onDismiss,
+                          child: Text(
+                            isFirstTime ? 'تابع البحث' : 'إغلاق',
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              fontSize: Responsive.clamp(
+                                (textTheme.titleMedium?.fontSize ?? 20) * scale,
+                                16,
+                                26,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 }
 
-/// لمعات (Flashes) على كل منطقة بالتتابع — بدون Glare وبدون تبديل الصورة داخل المستطيلات
-class _SequentialSpotFlashes extends StatelessWidget {
-  const _SequentialSpotFlashes({
+/// لمعات (Flashes) داخل destRect — محاذاة 1:1 مع الصورة
+class _SequentialSpotFlashesAligned extends StatelessWidget {
+  const _SequentialSpotFlashesAligned({
     required this.progress,
     required this.spots,
-    required this.designWidth,
-    required this.designHeight,
+    required this.designSize,
+    required this.scaleX,
+    required this.scaleY,
   });
 
   final Animation<double> progress;
   final List<_ViolationSpot> spots;
-  final double designWidth;
-  final double designHeight;
+  final Size designSize;
+  final double scaleX;
+  final double scaleY;
 
   @override
   Widget build(BuildContext context) {
     final n = spots.length;
-    const per = 1.0; // نقسم الزمن بالتساوي على كل Spot
+    const per = 1.0;
 
     return AnimatedBuilder(
       animation: progress,
@@ -847,61 +881,55 @@ class _SequentialSpotFlashes extends StatelessWidget {
         final p = progress.value;
         return Stack(
           fit: StackFit.expand,
-          children: [
-            // الخلفية الأصلية تظل كما هي (لا تبديل للصور هنا)
-            // flashes فقط
-            ...List.generate(n, (i) {
-              final start = (per / n) * i;
-              final end = start + (per / n);
-              final t = ((p - start) / (end - start)).clamp(0.0, 1.0);
+          children: List.generate(n, (i) {
+            final start = (per / n) * i;
+            final end = start + (per / n);
+            final t = ((p - start) / (end - start)).clamp(0.0, 1.0);
 
-              final area = spots[i].area;
-              final rect = Rect.fromLTWH(
-                area.left * designWidth,
-                area.top * designHeight,
-                area.width * designWidth,
-                area.height * designHeight,
-              );
+            final area = spots[i].area;
+            final rect = Rect.fromLTWH(
+              area.left * designSize.width * scaleX,
+              area.top * designSize.height * scaleY,
+              area.width * designSize.width * scaleX,
+              area.height * designSize.height * scaleY,
+            );
 
-              // منحنى لمعان بسيط: يظهر ويختفي سريعاً مع Scale خفيف
-              final opacity = Curves.easeInOut.transform(t);
-              final scale = lerpDouble(0.9, 1.05, Curves.easeOut.transform(t))!;
+            final opacity = Curves.easeInOut.transform(t);
+            final scale = lerpDouble(0.9, 1.05, Curves.easeOut.transform(t))!;
 
-              return Positioned(
-                left: rect.left,
-                top: rect.top,
-                width: rect.width,
-                height: rect.height,
-                child: Transform.scale(
-                  scale: scale,
-                  child: Opacity(
-                    opacity: opacity,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        // لمعة خفيفة شبه بيضاء
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Colors.white.withOpacity(0.35),
-                            Colors.white.withOpacity(0.15),
-                          ],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.35),
-                            blurRadius: 24,
-                            spreadRadius: 2,
-                          ),
+            return Positioned(
+              left: rect.left,
+              top: rect.top,
+              width: rect.width,
+              height: rect.height,
+              child: Transform.scale(
+                scale: scale,
+                child: Opacity(
+                  opacity: opacity,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.white.withOpacity(0.35),
+                          Colors.white.withOpacity(0.15),
                         ],
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white.withOpacity(0.35),
+                          blurRadius: 24,
+                          spreadRadius: 2,
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              );
-            }),
-          ],
+              ),
+            );
+          }),
         );
       },
     );

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math'; // 👈 لعمل عشوائية
-
 import 'package:flutter/material.dart';
 
 import '../utils/responsive.dart';
@@ -134,9 +133,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
     SoundEffects.playClaim();
     setState(() {
       _choiceState = _ChoiceState.initial;
-      // نقدر نخلي ترتيب الجهة ثابت وقت الإعادة لنفس المشهد (ما نغيّروش)
-      // لو عايز تغييره في كل محاولة، فعّل السطر الجاي:
-      // _correctOnLeft = _rng.nextBool();
+      // _correctOnLeft = _rng.nextBool(); // لو عايز تقلب الجهة في كل محاولة
     });
   }
 
@@ -173,19 +170,28 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          /// 🔥 الخلفية بالحجم الكامل: نستخدم SizedBox.expand + BoxFit.cover
+          /// لتحتل الصورة 100% من العرض/الارتفاع وتغطي الشاشة دون فراغات.
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 350),
-            child: Image.asset(
-              _currentBackground,
+            child: SizedBox.expand(
               key: ValueKey<String>(_currentBackground),
-              fit: BoxFit.cover,
+              child: Image.asset(
+                _currentBackground,
+                fit: BoxFit.cover,       // يغطي الشاشة بالكامل
+                alignment: Alignment.center,
+                filterQuality: FilterQuality.high,
+              ),
             ),
           ),
+
+          /// المحتوى الأمامي
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final width = constraints.maxWidth;
                 final mediaQuery = MediaQuery.of(context);
+
                 final padding = Responsive.symmetricPadding(
                   width,
                   horizontal: 24,
@@ -202,6 +208,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                     breakpoint: 900,
                   ),
                 );
+
                 final sectionSpacing = Responsive.scaledValue(
                   width,
                   16,
@@ -220,6 +227,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                   min: 20,
                   max: 48,
                 );
+
                 final textScale = Responsive.scaleForWidth(
                   width,
                   baseWidth: 390,
@@ -257,7 +265,9 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                               const SizedBox(width: 48),
                             ],
                           ),
+
                           SizedBox(height: sectionSpacing),
+
                           if (_choiceState == _ChoiceState.initial) ...[
                             Text(
                               _currentScenario.title,
@@ -268,7 +278,9 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                             ),
                             SizedBox(height: subtitleSpacing),
                           ],
+
                           const Spacer(),
+
                           _ChoicesBoard(
                             scenario: _currentScenario,
                             choiceState: _choiceState,
@@ -276,6 +288,7 @@ class _LevelThreeGameScreenState extends State<LevelThreeGameScreen> {
                             onRetry: _handleRetry,
                             correctOnLeft: _correctOnLeft,
                           ),
+
                           SizedBox(height: footerSpacing),
                         ],
                       ),
@@ -314,52 +327,18 @@ class _ChoicesBoard extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
+
         final containerPadding = EdgeInsets.all(
-          Responsive.scaledValue(
-            width,
-            24,
-            min: 16,
-            max: 36,
-          ),
+          Responsive.scaledValue(width, 24, min: 16, max: 36),
         );
-        final rowSpacing = Responsive.scaledValue(
-          width,
-          16,
-          min: 12,
-          max: 24,
-        );
-        final verticalSpacing = Responsive.scaledValue(
-          width,
-          24,
-          min: 16,
-          max: 32,
-        );
-        final tileHeight = Responsive.scaledValue(
-          width,
-          240,
-          min: 200,
-          max: 320,
-        );
+        final rowSpacing = Responsive.scaledValue(width, 16, min: 12, max: 24);
+        final verticalSpacing = Responsive.scaledValue(width, 24, min: 16, max: 32);
+        final tileHeight = Responsive.scaledValue(width, 240, min: 200, max: 320);
         final messagePadding = EdgeInsets.all(
-          Responsive.scaledValue(
-            width,
-            20,
-            min: 16,
-            max: 28,
-          ),
+          Responsive.scaledValue(width, 20, min: 16, max: 28),
         );
-        final messageSpacing = Responsive.scaledValue(
-          width,
-          20,
-          min: 16,
-          max: 28,
-        );
-        final retryPadding = Responsive.scaledValue(
-          width,
-          14,
-          min: 12,
-          max: 18,
-        );
+        final messageSpacing = Responsive.scaledValue(width, 20, min: 16, max: 28);
+        final retryPadding = Responsive.scaledValue(width, 14, min: 12, max: 18);
 
         final correctTile = Expanded(
           child: _ChoiceTile(
@@ -469,9 +448,7 @@ class _ChoiceTile extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          // بدون زوايا دائرية
           borderRadius: BorderRadius.zero,
-          // بدون إطار بعد الاختيار (حسب طلبك سابقاً)
           boxShadow: [
             BoxShadow(
               color: const Color(0xFF0D5F56).withOpacity(0.12),
@@ -483,6 +460,7 @@ class _ChoiceTile extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
+            // نعرض الصورة الداخلية بدون قص (داخل البلاط فقط)
             FittedBox(
               fit: BoxFit.contain,
               alignment: Alignment.center,
@@ -566,8 +544,7 @@ class _MessageCard extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: accent,
                   side: BorderSide(color: accent.withOpacity(0.5)),
-                  padding: buttonPadding ??
-                      const EdgeInsets.symmetric(vertical: 14),
+                  padding: buttonPadding ?? const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
